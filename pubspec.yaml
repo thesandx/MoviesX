@@ -32,6 +32,8 @@ dependencies:
   animations: ^1.1.2 #Help us to use animation easily also develop by flutter team
   google_fonts: ^1.1.1
   bubble_bottom_bar: ^1.2.0
+  carousel_slider: ^2.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

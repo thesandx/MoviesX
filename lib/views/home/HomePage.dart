@@ -2,15 +2,16 @@ import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:movie_app/views/home/Feed.dart';
 
 import '../../constants.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
   int currentIndex;
 
   @override
@@ -26,64 +27,25 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
       backgroundColor: kTextLightColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            (currentIndex == 0)
-                ? Icon(
-              Icons.dashboard,
-              size: 150.0,
-              color: Colors.red,
-            )
-                : (currentIndex == 1)
-                ? Icon(
-              Icons.folder_open,
-              size: 150.0,
-              color: Colors.indigo,
-            )
-                : Icon(
-              Icons.access_time,
-              size: 150.0,
-              color: Colors.deepPurple,
-            ),
-            // Categorylist(),
-            // Genres(),
-            // SizedBox(height: kDefaultPadding),
-            // MovieCarousel(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-          height: 60,
-          child: BottomNavigationBar()),
+      body: getCurrentPage(),
+      bottomNavigationBar: Container(height: 60, child: BottomNavigationBar()),
     );
   }
 
-  Widget Feed(){
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-
-        ],
-
-      ),
-    );
+  Widget getCurrentPage() {
+    if (currentIndex == 0) {
+      return Feed();
+    }
   }
 
-
-
-  Widget BottomNavigationBar(){
+  Widget BottomNavigationBar() {
     const TextStyle style = TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
-        color: Colors.black
-    );
+        fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black);
     const Color iconColor = Colors.grey;
     const Color iconActiveColor = Colors.black;
     return BubbleBottomBar(
@@ -96,7 +58,7 @@ class _HomePageState extends State<HomePage> {
       currentIndex: currentIndex,
       hasInk: true,
       inkColor: Colors.black12,
-      hasNotch: false,//border radius doesn't work when the notch is enabled.
+      hasNotch: false, //border radius doesn't work when the notch is enabled.
       onTap: changePage,
       items: [
         BubbleBottomBarItem(
@@ -109,9 +71,7 @@ class _HomePageState extends State<HomePage> {
             Icons.dashboard_rounded,
             color: iconActiveColor,
           ),
-          title: Text('Feed',
-              style: style
-          ),
+          title: Text('Feed', style: style),
         ),
         BubbleBottomBarItem(
           backgroundColor: Colors.grey,
@@ -123,9 +83,7 @@ class _HomePageState extends State<HomePage> {
             Icons.favorite,
             color: iconActiveColor,
           ),
-          title: Text('Favorite',
-              style: style
-          ),
+          title: Text('Favorite', style: style),
         ),
         BubbleBottomBarItem(
           backgroundColor: Colors.grey,
@@ -137,9 +95,7 @@ class _HomePageState extends State<HomePage> {
             Icons.account_circle_rounded,
             color: iconActiveColor,
           ),
-          title: Text('Profile',
-              style: style
-          ),
+          title: Text('Profile', style: style),
         ),
       ],
     );
@@ -148,7 +104,7 @@ class _HomePageState extends State<HomePage> {
   AppBar buildAppBar() {
     return AppBar(
       centerTitle: true,
-      backgroundColor:Color(0xfff3f5f7),
+      backgroundColor: Color(0xfff3f5f7),
       elevation: 0,
       leading: IconButton(
         padding: EdgeInsets.only(left: kDefaultPadding),
@@ -156,11 +112,10 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {},
       ),
       title: Text("MoviesX",
-        style: Theme.of(context).textTheme.headline5.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Colors.black
-        )
-      ),
+          style: Theme.of(context)
+              .textTheme
+              .headline5
+              .copyWith(fontWeight: FontWeight.w800, color: Colors.black)),
       actions: <Widget>[
         IconButton(
           padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
@@ -171,4 +126,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-

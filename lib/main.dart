@@ -13,11 +13,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MoviesX',
       theme: ThemeData(
-        fontFamily: 'Nunito',
-          scaffoldBackgroundColor: const Color(0xF3f5f7)
-      ),
-      home: HomePage()
+          fontFamily: 'Nunito', scaffoldBackgroundColor: const Color(0xF3f5f7)),
+      home: HomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
-
