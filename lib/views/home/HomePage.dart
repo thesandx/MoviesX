@@ -35,6 +35,23 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            (currentIndex == 0)
+                ? Icon(
+              Icons.dashboard,
+              size: 150.0,
+              color: Colors.red,
+            )
+                : (currentIndex == 1)
+                ? Icon(
+              Icons.folder_open,
+              size: 150.0,
+              color: Colors.indigo,
+            )
+                : Icon(
+              Icons.access_time,
+              size: 150.0,
+              color: Colors.deepPurple,
+            ),
             // Categorylist(),
             // Genres(),
             // SizedBox(height: kDefaultPadding),
@@ -45,6 +62,17 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Container(
           height: 60,
           child: BottomNavigationBar()),
+    );
+  }
+
+  Widget Feed(){
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+
+        ],
+
+      ),
     );
   }
 
@@ -128,11 +156,10 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {},
       ),
       title: Text("MoviesX",
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Colors.black
-        ),
+        style: Theme.of(context).textTheme.headline5.copyWith(
+            fontWeight: FontWeight.w600,
+            color: Colors.black
+        )
       ),
       actions: <Widget>[
         IconButton(
