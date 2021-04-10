@@ -2,6 +2,7 @@ import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:movie_app/views/Social/SocialMedia.dart';
 import 'package:movie_app/views/home/Feed.dart';
 import 'package:movie_app/views/profile/profile.dart';
 
@@ -39,8 +40,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getCurrentPage() {
-    if (currentIndex == 0) {
+    if (currentIndex == 1) {
       return Feed();
+    }
+    if(currentIndex==0){
+      return SocialMedia();
     }
     if(currentIndex==2){
       return ProfileScreen();
