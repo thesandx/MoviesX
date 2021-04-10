@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:movie_app/views/home/Feed.dart';
+import 'package:movie_app/views/profile/profile.dart';
 
 import '../../constants.dart';
 
@@ -40,6 +41,9 @@ class _HomePageState extends State<HomePage> {
   Widget getCurrentPage() {
     if (currentIndex == 0) {
       return Feed();
+    }
+    if(currentIndex==2){
+      return ProfileScreen();
     }
   }
 

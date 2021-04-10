@@ -28,16 +28,18 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  flutter_svg: ^0.19.1 #Help us to use SVG in our  app
-  animations: ^1.1.2 #Help us to use animation easily also develop by flutter team
+  flutter_svg: ^0.21.0+1 #Help us to use SVG in our  app
+  animations: ^2.0.0 #Help us to use animation easily also develop by flutter team
   google_fonts: ^1.1.1
   bubble_bottom_bar: ^1.2.0
-  carousel_slider: ^2.3.1
+  carousel_slider: ^3.0.0
+  lottie: ^0.7.0+1
+  pin_entry_text_field: ^0.1.4
+  device_preview: ^0.4.8
+  flutter_vector_icons: ^0.2.1
 
 dev_dependencies:
   flutter_test:
-    sdk: flutter
-  integration_test:
     sdk: flutter
 
 # For information on the generic Dart part of this file, see the
@@ -55,6 +57,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/jsons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
