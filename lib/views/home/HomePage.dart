@@ -1,4 +1,7 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -6,7 +9,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:movie_app/views/Social/SocialMedia.dart';
 import 'package:movie_app/views/home/Feed.dart';
 import 'package:movie_app/views/profile/profile.dart';
-
 import '../../constants.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,9 +26,21 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
+    saveUserData();
     currentIndex = 0;
   }
+
+  void saveUserData() async{
+
+    await FirebaseFirestore.instance.collection("users")
+        .doc(user.uid)
+        .set({
+          "mobile":user.phoneNumber
+    }).then((value) => print("user added in db"))
+        .catchError((error)=>print("Error:failed to add user"+error.toString()));
+  }
+
+
 
   changePage(int index) {
     setState(() {
