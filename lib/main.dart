@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_app/views/home/HomePage.dart';
 import 'package:movie_app/views/login/login_otp.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
 }
 

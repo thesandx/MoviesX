@@ -1,4 +1,5 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,11 +10,15 @@ import 'package:movie_app/views/profile/profile.dart';
 import '../../constants.dart';
 
 class HomePage extends StatefulWidget {
+  User user;
+  HomePage(this.user);
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(user);
 }
 
 class _HomePageState extends State<HomePage> {
+  User user;
+  _HomePageState(this.user);
   int currentIndex;
 
   @override

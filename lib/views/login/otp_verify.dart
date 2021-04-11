@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:movie_app/widgets/button.dart';
 import 'package:pin_entry_text_field/pin_entry_text_field.dart';
@@ -6,15 +9,124 @@ import 'package:pin_entry_text_field/pin_entry_text_field.dart';
 import '../home/HomePage.dart';
 
 class OtpVerfication extends StatefulWidget {
+  final String phone;
+  OtpVerfication(this.phone);
   @override
-  _OtpVerficationState createState() => _OtpVerficationState();
+  _OtpVerficationState createState() => _OtpVerficationState(phone);
 }
 
 class _OtpVerficationState extends State<OtpVerfication> {
+
+  final String phone;
+  _OtpVerficationState(this.phone);
+
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  Widget showSnackbar(String msg){
+    return SnackBar(
+        content: Text(msg,
+          style: GoogleFonts.nunito(
+            //textStyle: Theme.of(context).textTheme.display1,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            //fontStyle: FontStyle.italic,
+          ),
+        ));
+  }
+
+
+  Future<bool> manualVerify() async{
+    AuthCredential authCredential = PhoneAuthProvider.credential(verificationId: _verificationCode, smsCode: _otp);
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(authCredential);
+      User user = userCredential.user;
+      if (user != null) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) =>HomePage(user) ),
+              (route) => false,
+        );
+      }
+    } catch (e) {
+      // TODO
+      FocusScope.of(context).unfocus();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+
+      showSnackbar("Invalid OTP")
+      );
+    }
+  }
+
+  String _verificationCode;
+  String _otp;
+  Future<bool> sendOTP(String phoneNumber, BuildContext context) async {
+
+    FirebaseAuth _auth = FirebaseAuth.instance;
+
+    _auth.verifyPhoneNumber(
+        phoneNumber: "+91"+phoneNumber,
+        timeout: Duration(seconds: 120),
+
+        //forautomatic verification
+        verificationCompleted: (AuthCredential credential) async {
+          UserCredential userCredential = await _auth.signInWithCredential(
+              credential);
+
+          User user = userCredential.user;
+          if (user != null) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) =>HomePage(user) ),
+                  (route) => false,
+            );
+          }
+        },
+        verificationFailed: (FirebaseAuthException authException) {
+          print("authentication failed "+authException.message);
+          FocusScope.of(context).unfocus();
+          ScaffoldMessenger.of(context).showSnackBar(
+              showSnackbar("Something went wrong")
+          );
+          Navigator.of(context).pop();
+        },
+
+        //manualverification
+        codeSent: (String verificationId, [int forceResendingToken]) {
+          print("code sent manual");
+          setState(() {
+            _verificationCode = verificationId;
+            ScaffoldMessenger.of(context).showSnackBar(
+                showSnackbar("OTP Sent")
+            );
+          });
+
+
+        },
+        codeAutoRetrievalTimeout:null
+
+    );
+  }
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sendOTP(phone, context);
+  }
+
+
+
+  final _otpController = TextEditingController();
+
+
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      key: scaffoldKey,
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -81,6 +193,11 @@ class _OtpVerficationState extends State<OtpVerfication> {
                           child: PinEntryTextField(
                             showFieldAsBox: true,
                             fields: 6,
+                            onSubmit: (String pin){
+
+                              _otp = pin;
+
+                            },
                           ),
                         ),
                       ],
@@ -91,11 +208,7 @@ class _OtpVerficationState extends State<OtpVerfication> {
                   size: size,
                   text: "Verify",
                   press: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) =>HomePage() ),
-                          (route) => false,
-                    );
+                        manualVerify();
                   },
                 ),
               ],

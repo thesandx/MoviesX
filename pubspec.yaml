@@ -30,13 +30,16 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_svg: ^0.21.0+1 #Help us to use SVG in our  app
   animations: ^2.0.0 #Help us to use animation easily also develop by flutter team
-  google_fonts: ^1.1.1
+  google_fonts: ^2.0.0
   bubble_bottom_bar: ^1.2.0
   carousel_slider: ^3.0.0
-  lottie: ^0.7.0+1
+  lottie: ^1.0.1
   pin_entry_text_field: ^0.1.4
-  device_preview: ^0.4.8
-  flutter_vector_icons: ^0.2.1
+  flutter_vector_icons: ^1.0.0
+  firebase_core: ^1.0.3
+  firebase_analytics: ^7.1.1
+  firebase_auth: ^1.0.3
+  cloud_firestore: ^1.0.4
 
 dev_dependencies:
   flutter_test:
