@@ -5,6 +5,19 @@ on:
       - master
 
 jobs:
+  version_number:
+    runs-on: ubuntu-latest
+    outputs:
+      build_number: ${{ steps.buildnumber.outputs.build_number }}
+    steps:
+      - name: Generate build number
+        id: buildnumber
+        uses: einaregilsson/build-number@v3
+        with:
+          token: ${{secrets.GH_TOKEN}}
+      - name: Print new build number
+        run: echo "Build number is $BUILD_NUMBER"
+
   flutter_test:
     name: Run flutter test and analyze
     runs-on: ubuntu-latest
@@ -22,7 +35,7 @@ jobs:
 
   build_appbundle_apk:
     name: Build Flutter (Android)
-    needs: [flutter_test]
+    needs: [version_number,flutter_test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -42,6 +55,7 @@ jobs:
         with:
           artifacts: "build/app/outputs/apk/release/*.apk,build/app/outputs/bundle/release/app-release.aab"
           token: ${{ secrets.GH_TOKEN }}
-          tag: ${{ steps.version.outputs.content }}
-          commit: ${{ github.sha }}
+#          tag: ${{ needs.job1.outputs.build_number }}
+          tag: v0.1.${{ github.run_number }}
+          commit: master
           prerelease: true
