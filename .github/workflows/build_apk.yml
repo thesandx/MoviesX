@@ -47,7 +47,7 @@ jobs:
           channel: "stable"
       - run: flutter pub get
       - run: flutter clean
-#      - run: flutter build appbundle
+      - run: flutter build appbundle
 #      - run: flutter build apk --release --split-per-abi #i.e device wise binary i.e x86,arm64 etc
       - run: flutter build apk
       - name: Create a Release in GitHub
