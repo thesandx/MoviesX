@@ -22,6 +22,19 @@ jobs:
       - name: Print new build number
         run: echo "Build number is $BUILD_NUMBER"
 
+      -name: Current Directory
+        run: |
+          pwd
+
+      - name: Generating debug keystore and SHA1 key
+        run: |
+          cd /Users/runneradmin/.android
+          keytool -genkey -dname "cn=Sandeep Jha, ou=IIITB, o=IIITB, l=Darbhanga, st=Bihar, c=IN" -keystore /Users/runneradmin/.android/debug.keystore -storepass android -alias AndroidDebugKey -keyalg RSA -keysize 4096 -validity 10000 -v
+
+      - name: Displaying debug.keystore file
+        run: keytool -list -v -keystore /Users/runneradmin/.android/debug.keystore -alias AndroidDebugKey -storepass android -keypass android
+
+
   flutter_test:
     name: Run flutter test and analyze
     runs-on: macos-latest
