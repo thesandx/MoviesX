@@ -23,6 +23,8 @@ jobs:
         run: echo "Build number is $BUILD_NUMBER"
       - name: Current Directory
         run: pwd
+      - name: file content
+        run: ls
       - name: Print SHA-1 key
         run: cd android
       - name: execute gradle
