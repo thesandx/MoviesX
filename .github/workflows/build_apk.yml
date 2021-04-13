@@ -23,8 +23,7 @@ jobs:
         run: echo "Build number is $BUILD_NUMBER"
 
       -name: Current Directory
-        run: |
-          pwd
+        run: pwd
 
       - name: Generating debug keystore and SHA1 key
         run: |
