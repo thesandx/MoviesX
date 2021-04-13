@@ -21,14 +21,14 @@ jobs:
           token: ${{secrets.GH_TOKEN}}
       - name: Print new build number
         run: echo "Build number is $BUILD_NUMBER"
-      - name: Current Directory
-        run: pwd
-      - name: file content
-        run: ls
-      - name: Print SHA-1 key
-        run: cd android
-      - name: execute gradle
-        run: ./gradlew signingReport
+#      - name: Current Directory
+#        run: pwd
+#      - name: file content
+#        run: ls
+#      - name: Print SHA-1 key
+#        run: cd android
+#      - name: execute gradle
+#        run: ./gradlew signingReport
 
 #      - name: Generating debug keystore and SHA1 key
 #        run: |
@@ -56,7 +56,7 @@ jobs:
 
   build_appbundle_apk:
     name: Build Flutter (Android)
-    needs: [version_number,flutter_test]
+#    needs: [version_number,flutter_test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
