@@ -25,7 +25,7 @@ jobs:
         run: pwd
       - name: Print SHA-1 key
         run: cd android
-      -name: execute gradle
+      - name: execute gradle
         run: ./gradlew signingReport
 
 #      - name: Generating debug keystore and SHA1 key
