@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_app/views/SplashScreen.dart';
 import 'package:movie_app/views/home/HomePage.dart';
 import 'package:movie_app/views/login/login_otp.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'MoviesX',
       theme: ThemeData(
           fontFamily: 'Nunito', scaffoldBackgroundColor: const Color(0xF3f5f7)),
-      home: LoginOtp(),
+      home: SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

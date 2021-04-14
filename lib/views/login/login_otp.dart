@@ -15,9 +15,6 @@ class _LoginOtpState extends State<LoginOtp> {
   @override
   void initState() {
     super.initState();
-    Firebase.initializeApp().whenComplete(() {
-      print("firebase initialization completed");
-    });
   }
 
   final _phoneController = TextEditingController();
@@ -128,7 +125,7 @@ class _LoginOtpState extends State<LoginOtp> {
                                           padding: EdgeInsets.all(4),
                                           child: Text('+91'),
                                         ),
-                                        focusedBorder: OutlineInputBorder(
+                                        border: OutlineInputBorder(
                                           borderSide: BorderSide(
                                             color: Color(0xFFD4D4D4),
                                             width: 1.0,
@@ -140,6 +137,8 @@ class _LoginOtpState extends State<LoginOtp> {
                                             width: 1.0,
                                           ),
                                         ),
+
+                                        labelText: "Mobile",
                                         hintText: "Enter Your Mobile Number.",
                                       ),
                                     ),

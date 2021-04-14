@@ -70,28 +70,6 @@ class _SocialMediaState extends State<SocialMedia> {
     );
   }
 
-  Widget buildNavBarItem(IconData icon, int index) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedItemIndex = index;
-        });
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width / 5,
-        height: 45,
-        child: icon != null
-            ? Icon(
-          icon,
-          size: 25,
-          color: index == _selectedItemIndex
-              ? Colors.black
-              : Colors.grey[700],
-        )
-            : Container(),
-      ),
-    );
-  }
 
   Container buildPostSection(String urlPost, String urlProfilePhoto) {
     return Container(

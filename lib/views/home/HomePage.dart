@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    saveUserData();
+    //saveUserData();
     currentIndex = 0;
   }
 

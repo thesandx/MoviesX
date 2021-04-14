@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:movie_app/Services/CommonData.dart';
+import 'package:movie_app/views/SplashScreen.dart';
 import 'package:movie_app/views/login/login_otp.dart';
+import 'package:movie_app/views/profile/profile_edit.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -8,6 +12,24 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String name = "Loading...";
+  String user_name = "Loading...";
+
+
+  void fetchProfileData() async{
+    dynamic json = await CommonData.fetchProfileData();
+    setState(() {
+      name = json['name'] ?? "NA";
+      user_name = json['user_name'] ?? "NA";
+    });
+
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchProfileData();
+  }
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -61,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       height: 80,
                                     ),
                                     Text(
-                                      'Sandeep Kumar Jha',
+                                      name ?? "NA",
                                       style: TextStyle(
                                         color: Color.fromRGBO(39, 105, 171, 1),
                                         fontFamily: 'Nunito',
@@ -69,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                     ),
                                     Text(
-                                      '@thesandx',
+                                      user_name ?? "NA",
                                       style: TextStyle(
                                         color: Colors.grey[700],
                                         fontFamily: 'Nunito',
@@ -149,10 +171,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Positioned(
                               top: 110,
                               right: 20,
-                              child: Icon(
-                                AntDesign.edit,
-                                color: Colors.grey[700],
-                                size: 30,
+                              child: InkWell(
+                                child: Icon(
+                                  AntDesign.edit,
+                                  color: Colors.grey[700],
+                                  size: 30,
+                                ),
+                                onTap: (){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => CompleteProfile(FirebaseAuth.instance.currentUser))
+                                  );
+                                },
                               ),
                             ),
                             Positioned(
@@ -239,11 +269,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 fontFamily: 'Nunito',
                               ),
                             ),
-                            onTap: () {
+                            onTap: () async{
+                              await FirebaseAuth.instance.signOut();
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => LoginOtp()),
+                                      builder: (context) => SplashScreen()),
                                   (route) => false);
                             },
                           ),
