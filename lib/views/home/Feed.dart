@@ -100,7 +100,7 @@ class _FeedState extends State<Feed> {
   Widget getUpcomingMovie(List<Results> movies){
     return Container(
       margin: EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
-      height: 180,
+      height: 250,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: movies.length,
@@ -124,74 +124,83 @@ class _FeedState extends State<Feed> {
   }
 
   Widget smallMovieCard({Results movie}){
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          height: 120,
-          width: 120,
-          padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
-          margin: EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [kDefaultShadow],
-            image: DecorationImage(
-              fit: BoxFit.fill,
-              image: NetworkImage(CommonData.tmdb_base_image_url+'w300'+movie.posterPath),
+    return Container(
+      width:200,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            height: 200,
+            width: 200,
+            padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
+            margin: EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [kDefaultShadow],
+              image: DecorationImage(
+                fit: BoxFit.fill,
+                image: NetworkImage(CommonData.tmdb_base_image_url+'w300'+movie.posterPath),
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: kDefaultPadding / 2, horizontal: kDefaultPadding),
-          child: Text(
-            movie.title,
-            style: Theme.of(context)
-                .textTheme
-                .bodyText1
-                .copyWith(fontWeight: FontWeight.w800),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: kDefaultPadding / 2, horizontal: kDefaultPadding),
+            child: Text(
+              movie.title,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1
+                  .copyWith(fontWeight: FontWeight.w800),
+            ),
           ),
-        ),
 
 
-      ],
+        ],
 
+      ),
     );
   }
 
   Widget smallTvCard({Show movie}){
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          height: 120,
-          width: 120,
-          padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
-          margin: EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [kDefaultShadow],
-            image: DecorationImage(
-              fit: BoxFit.fill,
-              image: NetworkImage(CommonData.tmdb_base_image_url+'w300'+movie.posterPath),
+    return Container(
+      width: 10,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            height: 120,
+            width: 120,
+            padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
+            margin: EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [kDefaultShadow],
+              image: DecorationImage(
+                fit: BoxFit.fill,
+                image: NetworkImage(CommonData.tmdb_base_image_url+'w300'+movie.posterPath),
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: kDefaultPadding / 2, horizontal: kDefaultPadding),
-          child: Text(
-            movie.name,
-            style: Theme.of(context)
-                .textTheme
-                .bodyText1
-                .copyWith(fontWeight: FontWeight.w800),
+          Container(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: kDefaultPadding / 2, horizontal: kDefaultPadding),
+              child: Text(
+                movie.name,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    .copyWith(fontWeight: FontWeight.w800),
+              ),
+            ),
           ),
-        ),
 
 
-      ],
+        ],
 
+      ),
     );
   }
 

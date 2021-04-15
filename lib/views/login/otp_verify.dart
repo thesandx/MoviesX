@@ -120,10 +120,11 @@ class _OtpVerficationState extends State<OtpVerfication> {
             children: [
               Container(
                 width: double.infinity,
+                margin: EdgeInsets.only(top: size.height * 0.05),
                 child: Lottie.asset(
                   "assets/jsons/otp_verify.json",
-                  height: 300.0,
-                  width: 250.0,
+                  height: size.height * 0.4,
+                  alignment: Alignment.bottomCenter,
                 ),
               ),
               Stack(
@@ -142,50 +143,41 @@ class _OtpVerficationState extends State<OtpVerfication> {
                     ),
                     child: Card(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                        borderRadius: BorderRadius.circular(15.0),
                       ),
                       elevation: 10.0,
                       margin: EdgeInsets.all(12.0),
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: 40.0),
-                            padding: EdgeInsets.all(20.0),
-                            child: RichText(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
                                 children: <TextSpan>[
                                   TextSpan(
                                     text: "Verification\n\n",
-                                    style: TextStyle(
-                                      fontSize: 22.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF0278AE),
-                                    ),
+                                    style:getTextStyle(22, Color(0xFF0278AE),FontWeight.w900),
                                   ),
                                   TextSpan(
                                     text:
                                         "Enter the OTP sent to your mobile number",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      color: Color(0xFF373A40),
-                                    ),
+                                    style:getTextStyle(16, Color(0xFF373A40),FontWeight.normal),
+
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(20.0),
-                            child: PinEntryTextField(
+                            PinEntryTextField(
                               showFieldAsBox: true,
                               fields: 6,
                               onSubmit: (String pin) {
                                 _otp = pin;
                               },
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -234,5 +226,14 @@ class _OtpVerficationState extends State<OtpVerfication> {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  TextStyle getTextStyle(
+      double fontSize, Color textColor, FontWeight fontWeight) {
+    return TextStyle(
+        color: textColor,
+        fontFamily: 'Nunito',
+        fontSize: fontSize,
+        fontWeight: fontWeight);
   }
 }

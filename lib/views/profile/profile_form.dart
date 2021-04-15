@@ -25,10 +25,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   final _userNameController = TextEditingController();
   bool showError = false;
 
-
-
-
-
   String error = "error";
 
   @override
@@ -36,6 +32,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     return Form(
       key: _formKey,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           buildNameFormField(),
           SizedBox(height: 30),
@@ -189,7 +186,8 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
       validator: (value) {
         if (value == null ||
             value.isEmpty ||
-            value.length == 0) {
+            value.trim().length == 0
+        ) {
           //addError(error: error);
           return "Name can't be empty";;
         }
