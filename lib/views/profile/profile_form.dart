@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/home/HomePage.dart';
@@ -102,7 +103,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
   void addUserData(BuildContext context) async{
     setState(() {
-      CommonData.isLoading= true;
+      CommonData.isLoading = true;
     });
     if(_formKey.currentState.validate()) {
       fullName = _nameController.text.trim();
@@ -126,6 +127,11 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           (router)=>false
       );
     }
+    else{
+      setState(() {
+        CommonData.isLoading = false;
+      });
+    }
   }
 
 
@@ -140,6 +146,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     return TextFormField(
       controller: _userNameController,
       onSaved: (newValue) => userName = newValue,
+      inputFormatters: [FilteringTextInputFormatter.deny(new RegExp('[ -]'))],
 
       validator: (value){
         if (value == null ||

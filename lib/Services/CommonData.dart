@@ -1,10 +1,146 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_app/models/Results.dart';
+import 'package:movie_app/models/Show.dart';
+import 'package:movie_app/models/TrendingMovies.dart';
+import 'package:http/http.dart' as http;
+import 'package:movie_app/models/TrendingShows.dart';
 
 class CommonData{
 
   static   bool isLoading = false;
+
+  static String tmdb_api_key;
+
+  static String tmdb_base_url = "https://api.themoviedb.org/3/";
+  static String tmdb_base_image_url = "https://image.tmdb.org/t/p/";
+
+  static List<Results> trendingMovies = new List<Results>();
+  static List<Results> nowPlayingMovies = new List<Results>();
+  static List<Results> upcomingMovies = new List<Results>();
+  static List<Results> popularMovies = new List<Results>();
+  static List<Show> trendingTv = new List<Show>();
+
+
+
+  static Future<Map<String,List<Results>>> findMovieData() async{
+
+    var data = new Map();
+    trendingMovies = await findTrendingMovies();
+    trendingTv = await findTrendingShows();
+    nowPlayingMovies = await findNowPlayingMovies();
+    upcomingMovies = await findUpcomingMovies();
+    popularMovies = await findPopularMovies();
+    return data;
+
+  }
+
+  static Future<List<Results>> findPopularMovies() async{
+    var url = Uri.parse(tmdb_base_url+'movie/popular?api_key='+tmdb_api_key);
+    print(url);
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+    var data = response.body;
+
+
+    var myjson = jsonDecode(data);
+    //print(myjson);
+    TrendingMovies trendingMovies = TrendingMovies.fromJson(myjson);
+    print(trendingMovies.results.length);
+    return trendingMovies.results;
+
+  }
+
+
+  static Future<List<Results>> findUpcomingMovies() async{
+    var url = Uri.parse(tmdb_base_url+'movie/upcoming?api_key='+tmdb_api_key);
+    print(url);
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+    var data = response.body;
+
+
+    var myjson = jsonDecode(data);
+    //print(myjson);
+    TrendingMovies trendingMovies = TrendingMovies.fromJson(myjson);
+    print(trendingMovies.results.length);
+    return trendingMovies.results;
+
+  }
+
+  static Future<List<Results>> findNowPlayingMovies() async{
+    var url = Uri.parse(tmdb_base_url+'movie/now_playing?api_key='+tmdb_api_key);
+    print(url);
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+    var data = response.body;
+
+
+    var myjson = jsonDecode(data);
+    //print(myjson);
+    TrendingMovies trendingMovies = TrendingMovies.fromJson(myjson);
+    print(trendingMovies.results.length);
+    return trendingMovies.results;
+
+  }
+
+  static Future<List<Results>> findTrendingMovies() async{
+    var url = Uri.parse(tmdb_base_url+'trending/movie/day?api_key='+tmdb_api_key);
+    print(url);
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+   // print('Response body: ${response.body}');
+    var data = response.body;
+
+
+    var myjson = jsonDecode(data);
+    //print(myjson);
+   TrendingMovies trendingMovies = TrendingMovies.fromJson(myjson);
+    print(trendingMovies.results.length);
+    return trendingMovies.results;
+
+  }
+
+  static Future<List<Show>> findTrendingShows() async{
+    var url = Uri.parse(tmdb_base_url+'trending/tv/day?api_key='+tmdb_api_key);
+    print(url);
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+    var data = response.body;
+
+
+    var myjson = jsonDecode(data);
+    //print(myjson);
+    TrendingShows trendingShows = TrendingShows.fromJson(myjson);
+    print(trendingShows.results.length);
+    return trendingShows.results;
+
+  }
+
+  static Future<bool> retriveAPIKey() async{
+    CollectionReference tmdb = FirebaseFirestore.instance.collection('TMDB');
+
+    DocumentSnapshot documentSnapshot = await tmdb.doc("tmdb_api_key").get();
+    if(documentSnapshot.exists){
+      print("api_key mil gya");
+      //print(documentSnapshot.data());
+      tmdb_api_key = documentSnapshot.data()['v3_auth'];
+
+      return true;
+    }
+    else{
+      return false;
+    }
+
+
+  }
 
   static Future<dynamic> fetchProfileData() async{
 

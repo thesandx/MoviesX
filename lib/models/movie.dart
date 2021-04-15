@@ -1,4 +1,6 @@
 // Our movie model
+import 'package:movie_app/models/Results.dart';
+
 class Movie {
   final int id, year, numOfRatings, criticsReview, metascoreRating;
   final double rating;
@@ -22,7 +24,6 @@ class Movie {
   });
 }
 
-// our demo data movie data
 List<Movie> movies = [
   Movie(
     id: 1,
