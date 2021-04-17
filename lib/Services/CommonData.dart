@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/models/Show.dart';
 import 'package:movie_app/models/TrendingMovies.dart';
@@ -15,8 +14,12 @@ class CommonData{
 
   static String tmdb_api_key;
 
+  static String image_NA = "https://1.bp.blogspot.com/-JXjPS9M7MMU/XX39ZP97p4I/AAAAAAAAABE/VQYxrz_roLcXRf5m1nyxTYIxFh7KGow7wCPcBGAYYCw/s1600/df1.jpg";
+
   static String tmdb_base_url = "https://api.themoviedb.org/3/";
   static String tmdb_base_image_url = "https://image.tmdb.org/t/p/";
+  static String language = "&language=en-US"; //hi-IN,en-US,en-IN
+  static String region= "&region=US"; //in or us in caps
 
   static List<Results> trendingMovies = new List<Results>();
   static List<Results> nowPlayingMovies = new List<Results>();
@@ -24,22 +27,23 @@ class CommonData{
   static List<Results> popularMovies = new List<Results>();
   static List<Show> trendingTv = new List<Show>();
 
+  static Map<int,bool> likedMovies = new Map();
 
 
-  static Future<Map<String,List<Results>>> findMovieData() async{
 
-    var data = new Map();
+  static Future<void> findMovieData() async{
     trendingMovies = await findTrendingMovies();
-    trendingTv = await findTrendingShows();
+    //trendingTv = await findTrendingShows();
     nowPlayingMovies = await findNowPlayingMovies();
     upcomingMovies = await findUpcomingMovies();
     popularMovies = await findPopularMovies();
-    return data;
+    return;
 
   }
 
+
   static Future<List<Results>> findPopularMovies() async{
-    var url = Uri.parse(tmdb_base_url+'movie/popular?api_key='+tmdb_api_key);
+    var url = Uri.parse(tmdb_base_url+'movie/popular?api_key='+tmdb_api_key+language+region);
     print(url);
     var response = await http.get(url);
     print('Response status: ${response.statusCode}');
@@ -57,7 +61,7 @@ class CommonData{
 
 
   static Future<List<Results>> findUpcomingMovies() async{
-    var url = Uri.parse(tmdb_base_url+'movie/upcoming?api_key='+tmdb_api_key);
+    var url = Uri.parse(tmdb_base_url+'movie/upcoming?api_key='+tmdb_api_key+language+region);
     print(url);
     var response = await http.get(url);
     print('Response status: ${response.statusCode}');
@@ -74,7 +78,7 @@ class CommonData{
   }
 
   static Future<List<Results>> findNowPlayingMovies() async{
-    var url = Uri.parse(tmdb_base_url+'movie/now_playing?api_key='+tmdb_api_key);
+    var url = Uri.parse(tmdb_base_url+'movie/now_playing?api_key='+tmdb_api_key+language+region);
     print(url);
     var response = await http.get(url);
     print('Response status: ${response.statusCode}');
@@ -133,6 +137,8 @@ class CommonData{
       //print(documentSnapshot.data());
       tmdb_api_key = documentSnapshot.data()['v3_auth'];
 
+
+
       return true;
     }
     else{
@@ -165,7 +171,67 @@ class CommonData{
         .get();
     final List<QueryDocumentSnapshot> documents = result.docs;
     return documents.length == 1;
+  }
 
+  static Stream<Map<int,bool>> streamlikeValue() async*{
+
+          yield CommonData.likedMovies;
+
+  }
+
+  static Future<void> getLikedMovies(User user) async{
+    likedMovies.clear();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('/users/'+user.uid+'/movies')
+        .get();
+
+    querySnapshot.docs.forEach((doc) {
+      likedMovies[doc["movie_id"]] = doc["liked"];
+    });
+    streamlikeValue();
+
+
+
+
+    //Provider.of<MovieProvider>(context).setChange(likedMovies);
+
+  }
+
+  static Future<bool> addLikedMovie(User user,int movie_id,bool liked) async{
+    CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
+    //check if movieid exists
+    DocumentSnapshot documentSnapshot = await movies.doc(movie_id.toString()).get();
+    if(documentSnapshot.exists){
+      print(documentSnapshot.data());
+        print("detail exists");
+        await movies.doc(movie_id.toString()).update({
+          "liked":liked,
+          "movie_id":movie_id
+        }).then((value) async{
+          print("Movie added successfully "+movie_id.toString());
+         await getLikedMovies(user);
+          return true;
+        }).catchError((error){
+          print("Failed to add movie: $error");
+          return false;
+        });
+
+    }
+    else{
+      //create moviedid
+      //add movie
+      await movies.doc(movie_id.toString()).set({
+        "liked":liked,
+        "movie_id":movie_id
+      }).then((value) async{
+        print("Movie added successfully "+movie_id.toString());
+        await getLikedMovies(user);
+        return true;
+      }).catchError((error){
+        print("Failed to add movie: $error");
+        return false;
+      });
+    }
   }
 
   static Future<bool> checkIfUserDetailExists(User user) async{

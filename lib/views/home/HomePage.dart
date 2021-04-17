@@ -6,9 +6,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:movie_app/models/MovieProvider.dart';
 import 'package:movie_app/views/Social/SocialMedia.dart';
 import 'package:movie_app/views/home/Feed.dart';
 import 'package:movie_app/views/profile/profile.dart';
+import 'package:provider/provider.dart';
 import '../../constants.dart';
 
 class HomePage extends StatefulWidget {
@@ -50,11 +52,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(),
-      backgroundColor: kTextLightColor,
-      body: getCurrentPage(),
-      bottomNavigationBar: Container(height: 60, child: BottomNavigationBar()),
+    return ChangeNotifierProvider(
+      create: (_) => MovieProvider(),
+      child: Scaffold(
+        appBar: buildAppBar(),
+        backgroundColor: kTextLightColor,
+        body: getCurrentPage(),
+        bottomNavigationBar: Container(height: 60, child: BottomNavigationBar()),
+      ),
     );
   }
 
@@ -107,7 +112,7 @@ class _HomePageState extends State<HomePage> {
             color: iconColor,
           ),
           activeIcon: Icon(
-            Icons.favorite,
+            Icons.explore,
             color: iconActiveColor,
           ),
           title: Text('Favorite', style: style),

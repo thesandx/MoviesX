@@ -38,7 +38,7 @@ class _SocialMediaState extends State<SocialMedia> {
         },
       ),
       body: Container(
-          padding: EdgeInsets.only(left: 10, right: 10, top: 15),
+          padding: EdgeInsets.only(left: 10, right: 10, top: 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -73,7 +73,7 @@ class _SocialMediaState extends State<SocialMedia> {
 
   Container buildPostSection(String urlPost, String urlProfilePhoto) {
     return Container(
-      margin: EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: 8), //separtion b/w list items
       padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.grey.withOpacity(0.1),
@@ -157,7 +157,7 @@ class _SocialMediaState extends State<SocialMedia> {
     return Stack(
       children: [
         Container(
-          height: MediaQuery.of(context).size.width - 70,
+          height: MediaQuery.of(context).size.width , //-70 height me width liya hai intresting,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
@@ -176,8 +176,17 @@ class _SocialMediaState extends State<SocialMedia> {
         Positioned(
           bottom: 20,
           right: 20,
-          child: Icon(Icons.favorite,
-              size: 35, color: Colors.white.withOpacity(0.7)),
+          child: InkWell(
+            child: Icon(Icons.favorite,
+                size: 35,
+                color: Colors.white.withOpacity(0.7)),
+
+            onTap: (){
+              setState(() {
+
+              });
+            },
+          ),
         )
       ],
     );

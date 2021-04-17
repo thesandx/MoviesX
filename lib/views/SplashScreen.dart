@@ -19,7 +19,8 @@ class _SplashScreenState extends State<SplashScreen> {
       User user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         print(user.phoneNumber);
-        CommonData.retriveAPIKey().then((value) {
+        CommonData.retriveAPIKey().then((value) async{
+
           if (value) {
             //print(CommonData.tmdb_api_key);
             Navigator.pushAndRemoveUntil(

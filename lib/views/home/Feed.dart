@@ -1,12 +1,15 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:movie_app/Services/CommonData.dart';
+import 'package:movie_app/models/MovieProvider.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/models/Show.dart';
 import 'package:movie_app/models/TrendingMovies.dart';
-import 'package:movie_app/models/movie.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:math' as math;
 
@@ -20,14 +23,17 @@ class Feed extends StatefulWidget {
 }
 
 class _FeedState extends State<Feed> {
-
   PageController _pageController;
   int initialPage;
   CarouselController buttonCarouselController;
   bool _enabled = true;
+
   //List<Results> movies = new List<Results>();
 
-  Map<String,List<Results>> movieData = new Map();
+  Map<String, List<Results>> movieData = new Map();
+
+  CollectionReference _reference = FirebaseFirestore.instance
+      .collection('/users/${FirebaseAuth.instance.currentUser.uid}/movies');
 
   @override
   void initState() {
@@ -35,7 +41,7 @@ class _FeedState extends State<Feed> {
     initialPage = 0;
     buttonCarouselController = CarouselController();
     _pageController = PageController();
-
+    CommonData.getLikedMovies(FirebaseAuth.instance.currentUser);
   }
 
   @override
@@ -50,24 +56,23 @@ class _FeedState extends State<Feed> {
       future: CommonData.findMovieData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          movieData = snapshot.data as Map<String,List<Results>>;
-         return SingleChildScrollView(
-            child: screen()
-          );
+          return SingleChildScrollView(child: screen());
         }
-        return SingleChildScrollView(
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey[200],
-            highlightColor: Colors.grey[350],
-            child: screen()
-          ),
-        );
+        return CommonData.popularMovies.isEmpty?shimmerScreen():SingleChildScrollView(child:screen());
       },
     );
-
   }
 
-  Widget screen(){
+  Widget shimmerScreen(){
+    return SingleChildScrollView(
+      child: Shimmer.fromColors(
+          baseColor: Colors.grey[200],
+          highlightColor: Colors.grey[350],
+          child: screen()),
+    );
+  }
+
+  Widget screen() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -85,7 +90,7 @@ class _FeedState extends State<Feed> {
     );
   }
 
-  Widget getHeadLIne({String title}){
+  Widget getHeadLIne({String title}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
       padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
@@ -97,51 +102,74 @@ class _FeedState extends State<Feed> {
     );
   }
 
-  Widget getUpcomingMovie(List<Results> movies){
+  Widget getUpcomingMovie(List<Results> movies) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
       height: 250,
       child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: movies.length,
-        itemBuilder: (context, index) => smallMovieCard(movie: movies[index])
-      ),
+          scrollDirection: Axis.horizontal,
+          itemCount: movies.length,
+          itemBuilder: (context, index) =>
+              smallMovieCard(movie: movies[index])),
     );
-
   }
 
-  Widget getUpcomingShows(List<Show> movies){
+  Widget getUpcomingShows(List<Show> movies) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
       height: 180,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: movies.length,
-          itemBuilder: (context, index) => smallTvCard(movie: movies[index])
-      ),
+          itemBuilder: (context, index) => smallTvCard(movie: movies[index])),
     );
-
   }
 
-  Widget smallMovieCard({Results movie}){
+  Widget smallMovieCard({Results movie}) {
     return Container(
-      width:200,
+      width: 200,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            height: 200,
-            width: 200,
-            padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
-            margin: EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [kDefaultShadow],
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: NetworkImage(CommonData.tmdb_base_image_url+'w300'+movie.posterPath),
+          Stack(
+            children: [
+              Container(
+                height: 200,
+                width: 200,
+                padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
+                margin: EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [kDefaultShadow],
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    //i.e isi me adjust kro pura image,cover means jitna itna to cover kr do baki bahr bhi jaaye no probem
+                    image: NetworkImage(CommonData.tmdb_base_image_url +
+                        'w300' +
+                        movie.posterPath),
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: InkWell(
+                  child: Icon(Icons.favorite,
+                      size: 35,
+                      color: CommonData.likedMovies[movie.id] ??
+                          false
+                          ? Colors.red.withOpacity(1.0)
+                          : Colors.white.withOpacity(0.7)),
+                  onTap: () {
+                    //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
+                    addMovie(
+                        movie.id,
+                        CommonData.likedMovies[movie.id] ??
+                            false);
+                  },
+                ),
+              )
+            ],
           ),
           Padding(
             padding: EdgeInsets.symmetric(
@@ -155,15 +183,20 @@ class _FeedState extends State<Feed> {
                   .copyWith(fontWeight: FontWeight.w800),
             ),
           ),
-
-
         ],
-
       ),
     );
   }
 
-  Widget smallTvCard({Show movie}){
+  void addMovie(int movie_id, bool isLiked) async {
+    await CommonData.addLikedMovie(
+        FirebaseAuth.instance.currentUser, movie_id, !isLiked);
+    setState(() {
+
+    });
+  }
+
+  Widget smallTvCard({Show movie}) {
     return Container(
       width: 10,
       child: Column(
@@ -179,7 +212,8 @@ class _FeedState extends State<Feed> {
               boxShadow: [kDefaultShadow],
               image: DecorationImage(
                 fit: BoxFit.fill,
-                image: NetworkImage(CommonData.tmdb_base_image_url+'w300'+movie.posterPath),
+                image: NetworkImage(
+                    CommonData.tmdb_base_image_url + 'w300' + movie.posterPath),
               ),
             ),
           ),
@@ -196,22 +230,18 @@ class _FeedState extends State<Feed> {
               ),
             ),
           ),
-
-
         ],
-
       ),
     );
   }
 
-  Widget getSlider(){
+  Widget getSlider() {
     return CarouselSlider(
       options: CarouselOptions(
-          height: MediaQuery.of(context).size.height*0.5,
+          height: MediaQuery.of(context).size.height * 0.5,
           enlargeCenterPage: true,
           enlargeStrategy: CenterPageEnlargeStrategy.height,
-          enableInfiniteScroll: true
-      ),
+          enableInfiniteScroll: true),
       items: CommonData.nowPlayingMovies.map((i) {
         return Builder(
           builder: (BuildContext context) {
@@ -235,7 +265,9 @@ class _FeedState extends State<Feed> {
               boxShadow: [kDefaultShadow],
               image: DecorationImage(
                 fit: BoxFit.fill,
-                image: NetworkImage(CommonData.tmdb_base_image_url+"w400"+movie.posterPath),
+                image: NetworkImage(movie.posterPath != null
+                    ? CommonData.tmdb_base_image_url + "w400" + movie.posterPath
+                    : CommonData.image_NA),
               ),
             ),
           ),
@@ -244,7 +276,7 @@ class _FeedState extends State<Feed> {
           padding: EdgeInsets.symmetric(
               vertical: kDefaultPadding / 2, horizontal: kDefaultPadding),
           child: Text(
-            movie.title,
+            movie.title ?? "Not Available",
             style: Theme.of(context)
                 .textTheme
                 .headline5
@@ -264,5 +296,4 @@ class _FeedState extends State<Feed> {
       ],
     );
   }
-
 }
