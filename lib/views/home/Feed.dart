@@ -41,7 +41,7 @@ class _FeedState extends State<Feed> {
     initialPage = 0;
     buttonCarouselController = CarouselController();
     _pageController = PageController();
-    CommonData.getLikedMovies(FirebaseAuth.instance.currentUser);
+   // CommonData.getLikedMovies(FirebaseAuth.instance.currentUser);
   }
 
   @override
@@ -53,7 +53,7 @@ class _FeedState extends State<Feed> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: CommonData.findMovieData(),
+      future: CommonData.findMovieData(FirebaseAuth.instance.currentUser),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return SingleChildScrollView(child: screen());
@@ -153,20 +153,32 @@ class _FeedState extends State<Feed> {
               Positioned(
                 bottom: 20,
                 right: 20,
-                child: InkWell(
-                  child: Icon(Icons.favorite,
-                      size: 35,
-                      color: CommonData.likedMovies[movie.id] ??
-                          false
-                          ? Colors.red.withOpacity(1.0)
-                          : Colors.white.withOpacity(0.7)),
-                  onTap: () {
-                    //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
-                    addMovie(
-                        movie.id,
-                        CommonData.likedMovies[movie.id] ??
-                            false);
-                  },
+                child: StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance.collection('/users/${FirebaseAuth.instance.currentUser.uid}/movies').doc(movie.id.toString()).snapshots(),
+                  builder: (context, snapshot) {
+
+                    if (snapshot.connectionState == ConnectionState.active) {
+                      //print(snapshot.data.toString() + " ${movie.id}");
+                      return InkWell(
+                        child: Icon(Icons.favorite,
+                            size: 35,
+                            color: snapshot.data['liked'] ??
+                                false
+                                ? Colors.red.withOpacity(1.0)
+                                : Colors.white.withOpacity(0.7)),
+                        onTap: () {
+                          //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
+                          addMovie(
+                              movie.id,
+                              snapshot.data['liked'] ??
+                                  false);
+                        },
+                      );
+                    }
+                    else{
+                      return CircularProgressIndicator();
+                    }
+                  }
                 ),
               )
             ],
@@ -191,9 +203,7 @@ class _FeedState extends State<Feed> {
   void addMovie(int movie_id, bool isLiked) async {
     await CommonData.addLikedMovie(
         FirebaseAuth.instance.currentUser, movie_id, !isLiked);
-    setState(() {
 
-    });
   }
 
   Widget smallTvCard({Show movie}) {

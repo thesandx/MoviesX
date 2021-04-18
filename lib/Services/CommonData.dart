@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:movie_app/main.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/models/Show.dart';
 import 'package:movie_app/models/TrendingMovies.dart';
@@ -31,15 +33,18 @@ class CommonData{
 
 
 
-  static Future<void> findMovieData() async{
+  static Future<void> findMovieData(User user) async{
     trendingMovies = await findTrendingMovies();
     //trendingTv = await findTrendingShows();
     nowPlayingMovies = await findNowPlayingMovies();
     upcomingMovies = await findUpcomingMovies();
     popularMovies = await findPopularMovies();
+    //add all new movie id to peopple
+    await addNewMovieinDB(user);
     return;
 
   }
+
 
 
   static Future<List<Results>> findPopularMovies() async{
@@ -173,11 +178,6 @@ class CommonData{
     return documents.length == 1;
   }
 
-  static Stream<Map<int,bool>> streamlikeValue() async*{
-
-          yield CommonData.likedMovies;
-
-  }
 
   static Future<void> getLikedMovies(User user) async{
     likedMovies.clear();
@@ -188,14 +188,60 @@ class CommonData{
     querySnapshot.docs.forEach((doc) {
       likedMovies[doc["movie_id"]] = doc["liked"];
     });
-    streamlikeValue();
-
-
-
-
-    //Provider.of<MovieProvider>(context).setChange(likedMovies);
 
   }
+
+  static Future<void> addNewMovieinDB(User user) async{
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    Map<int,bool> map = new Map();
+    //get already stored movie
+    CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
+    QuerySnapshot querySnapshot = await movies.get();
+      querySnapshot.docs.forEach((doc) {
+        //print("Db ka movie id ${doc['movie_id']}");
+        map[doc['movie_id']] = doc['liked'];
+    });
+
+    List<int> moviesId = new List<int>();
+    for(Results r in trendingMovies){
+      if(!map.containsKey(r.id)){
+        moviesId.add(r.id);
+      }
+    }
+
+    for(Results r in nowPlayingMovies){
+      if(!map.containsKey(r.id)){
+        moviesId.add(r.id);
+      }
+    }
+
+    for(Results r in upcomingMovies){
+      if(!map.containsKey(r.id)){
+        moviesId.add(r.id);
+      }
+    }
+
+    for(Results r in popularMovies){
+      if(!map.containsKey(r.id)){
+        moviesId.add(r.id);
+      }
+    }
+
+
+    print("naya movie ka length ${moviesId.length}");
+    for(int i in moviesId){
+     // print("movie id is  ${i}");
+      DocumentReference documentReference = movies.doc(i.toString());
+      batch.set(documentReference,{
+        "liked":false,
+        "movie_id":i
+      });
+    }
+
+    return await batch.commit();
+
+  }
+
 
   static Future<bool> addLikedMovie(User user,int movie_id,bool liked) async{
     CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
