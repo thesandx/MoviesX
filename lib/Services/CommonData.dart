@@ -45,7 +45,48 @@ class CommonData{
 
   }
 
+  static Future<List<Results>> searchMovies(User user,String query) async{
+    var url = Uri.parse(tmdb_base_url+'search/movie?api_key='+tmdb_api_key+language+"&query=${query}&include_adult=false");
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+    var data = response.body;
+    var myjson = jsonDecode(data);
 
+    List<Results> res = TrendingMovies.fromJson(myjson).results;
+
+    //enter new values in db
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    Map<int,bool> map = new Map();
+    //get already stored movie
+    CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
+    QuerySnapshot querySnapshot = await movies.get();
+    querySnapshot.docs.forEach((doc) {
+      //print("Db ka movie id ${doc['movie_id']}");
+      map[doc['movie_id']] = doc['liked'];
+    });
+
+    List<int> moviesId = new List<int>();
+    for(Results r in res){
+      if(!map.containsKey(r.id)){
+        moviesId.add(r.id);
+      }
+    }
+
+    print("naya movie ka length ${moviesId.length}");
+    for(int i in moviesId){
+      // print("movie id is  ${i}");
+      DocumentReference documentReference = movies.doc(i.toString());
+      batch.set(documentReference,{
+        "liked":false,
+        "movie_id":i
+      });
+    }
+
+    await batch.commit();
+    return res;
+  }
 
   static Future<List<Results>> findPopularMovies() async{
     var url = Uri.parse(tmdb_base_url+'movie/popular?api_key='+tmdb_api_key+language+region);

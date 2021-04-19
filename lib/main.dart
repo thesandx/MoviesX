@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MoviesX',
       theme: ThemeData(
-          fontFamily: 'Nunito', scaffoldBackgroundColor: const Color(0xF3f5f7)),
+          fontFamily: 'Nunito'),
       home: SplashScreen(),
       debugShowCheckedModeBanner: false,
     );

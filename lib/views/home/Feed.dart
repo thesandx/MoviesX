@@ -144,9 +144,9 @@ class _FeedState extends State<Feed> {
                   image: DecorationImage(
                     fit: BoxFit.fill,
                     //i.e isi me adjust kro pura image,cover means jitna itna to cover kr do baki bahr bhi jaaye no probem
-                    image: NetworkImage(CommonData.tmdb_base_image_url +
-                        'w300' +
-                        movie.posterPath),
+                    image: NetworkImage(movie.posterPath != null
+                        ? CommonData.tmdb_base_image_url + "w300" + movie.posterPath
+                        : CommonData.image_NA),
                   ),
                 ),
               ),
@@ -267,19 +267,54 @@ class _FeedState extends State<Feed> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Expanded(
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
-            margin: EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: [kDefaultShadow],
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: NetworkImage(movie.posterPath != null
-                    ? CommonData.tmdb_base_image_url + "w400" + movie.posterPath
-                    : CommonData.image_NA),
+          child: Stack(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
+                margin: EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  boxShadow: [kDefaultShadow],
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(movie.posterPath != null
+                        ? CommonData.tmdb_base_image_url + "w400" + movie.posterPath
+                        : CommonData.image_NA),
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance.collection('/users/${FirebaseAuth.instance.currentUser.uid}/movies').doc(movie.id.toString()).snapshots(),
+                    builder: (context, snapshot) {
+
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        //print(snapshot.data.toString() + " ${movie.id}");
+                        return InkWell(
+                          child: Icon(Icons.favorite,
+                              size: 35,
+                              color: snapshot.data['liked'] ??
+                                  false
+                                  ? Colors.red.withOpacity(1.0)
+                                  : Colors.white.withOpacity(0.7)),
+                          onTap: () {
+                            //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
+                            addMovie(
+                                movie.id,
+                                snapshot.data['liked'] ??
+                                    false);
+                          },
+                        );
+                      }
+                      else{
+                        return CircularProgressIndicator();
+                      }
+                    }
+                ),
+              )
+            ],
           ),
         ),
         Padding(

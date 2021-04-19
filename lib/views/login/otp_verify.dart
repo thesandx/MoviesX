@@ -203,7 +203,7 @@ class _OtpVerficationState extends State<OtpVerfication> {
     });
     if (user != null) {
       bool userCreate = await CommonData.createUser(user);
-      if (userCreate) {
+      if (userCreate ?? false) {
         bool val = await CommonData.retriveAPIKey();
         bool isDetail = await CommonData.checkIfUserDetailExists(user);
         if (isDetail) {

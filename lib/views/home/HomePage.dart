@@ -10,6 +10,7 @@ import 'package:movie_app/models/MovieProvider.dart';
 import 'package:movie_app/views/Social/SocialMedia.dart';
 import 'package:movie_app/views/home/Feed.dart';
 import 'package:movie_app/views/profile/profile.dart';
+import 'package:movie_app/widgets/SearchBar.dart';
 import 'package:provider/provider.dart';
 import '../../constants.dart';
 
@@ -152,7 +153,9 @@ class _HomePageState extends State<HomePage> {
         IconButton(
           padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
           icon: SvgPicture.asset("assets/icons/search.svg"),
-          onPressed: () {},
+          onPressed: () {
+            showSearch(context: context, delegate: MovieSearch());
+          },
         ),
       ],
     );
