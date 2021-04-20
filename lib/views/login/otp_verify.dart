@@ -24,6 +24,7 @@ class OtpVerfication extends StatefulWidget {
 class _OtpVerficationState extends State<OtpVerfication> {
   final String phone;
   bool _isLoading = false;
+  bool _otpSent = false;
 
   _OtpVerficationState(this.phone);
 
@@ -88,6 +89,7 @@ class _OtpVerficationState extends State<OtpVerfication> {
           print("code sent manual");
           setState(() {
             _verificationCode = verificationId;
+            _otpSent=true;
             ScaffoldMessenger.of(context)
                 .showSnackBar(showSnackbar("OTP Sent"));
           });
@@ -162,7 +164,7 @@ class _OtpVerficationState extends State<OtpVerfication> {
                                   ),
                                   TextSpan(
                                     text:
-                                        "Enter the OTP sent to your mobile number",
+                                        _otpSent?"Enter the OTP sent to +91${phone}":"Sending OTP to +91${phone}",
                                     style:getTextStyle(16, Color(0xFF373A40),FontWeight.normal),
 
                                   ),
@@ -201,33 +203,37 @@ class _OtpVerficationState extends State<OtpVerfication> {
     setState(() {
       _isLoading = true;
     });
-    if (user != null) {
-      bool userCreate = await CommonData.createUser(user);
-      if (userCreate ?? false) {
-        CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
-        await CommonData.getAllMovies(movies);
-        bool val = await CommonData.retriveAPIKey();
-        bool isDetail = await CommonData.checkIfUserDetailExists(user);
-        if (isDetail) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage(user)),
-            (route) => false,
-          );
+    try {
+      if (user != null) {
+        bool userCreate = await CommonData.createUser(user) ?? true;
+        if (userCreate) {
+          CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
+          await CommonData.getAllMovies(movies);
+          bool val = await CommonData.retriveAPIKey();
+          bool isDetail = await CommonData.checkIfUserDetailExists(user);
+          if (isDetail) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage(user)),
+              (route) => false,
+            );
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => CompleteProfile(user)),
+              (route) => false,
+            );
+          }
         } else {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => CompleteProfile(user)),
-            (route) => false,
-          );
+          showSnackbar("User not created");
         }
-      } else {
-        showSnackbar("User not created");
       }
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-    setState(() {
-      _isLoading = false;
-    });
+
   }
 
   TextStyle getTextStyle(
