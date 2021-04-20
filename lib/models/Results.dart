@@ -25,7 +25,7 @@ class Results {
   Results.fromJson(Map<String, dynamic> json) {
 
     overview = json['overview'];
-    releaseDate = json['release_date'];
+    releaseDate = json['release_date']??"";
     id = json['id'];
 
     backdropPath = json['backdrop_path'];
@@ -35,7 +35,7 @@ class Results {
     originalTitle = json['original_title'];
     posterPath = json['poster_path'];
 
-    title = json['title'];
+    title = json['title']??"NA";
 
   }
 

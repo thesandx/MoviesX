@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ class _SplashScreenState extends State<SplashScreen> {
       if (user != null) {
         print(user.phoneNumber);
         CommonData.retriveAPIKey().then((value) async{
+          CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
+          await CommonData.getAllMovies(movies);
 
           if (value) {
             //print(CommonData.tmdb_api_key);

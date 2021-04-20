@@ -5,11 +5,9 @@ import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:movie_app/Services/CommonData.dart';
-import 'package:movie_app/models/MovieProvider.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/models/Show.dart';
 import 'package:movie_app/models/TrendingMovies.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:math' as math;
 

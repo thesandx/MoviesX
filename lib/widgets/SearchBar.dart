@@ -60,14 +60,18 @@ class MovieSearch extends SearchDelegate{
 
   }
 
+  List<Results> movies = [];
+
 
   Widget searchResult(String val){
+    movies.clear();
     return FutureBuilder<List<Results>>(
         future: CommonData.searchMovies(FirebaseAuth.instance.currentUser,val),
         builder: (context,snapshot){
           if (snapshot.connectionState == ConnectionState.done){
+            movies = snapshot.data;
             return snapshot.data.length==0 ? Center(
-              child: Text("Enter movie name",
+              child: Text("No results found",
                 style: TextStyle(
                     fontSize: 28
                 ),

@@ -31,6 +31,8 @@ class CommonData{
 
   static Map<int,bool> likedMovies = new Map();
 
+  static Map<int,bool> allMovies = new Map();
+
 
 
   static Future<void> findMovieData(User user) async{
@@ -45,6 +47,21 @@ class CommonData{
 
   }
 
+  static Future<Map<int,bool>> getAllMovies(CollectionReference movies) async{
+
+    Map<int,bool> map = new Map();
+    //get already stored movie
+    //ToDo every time such heavy read will full the quota,either local persists or commonData
+    QuerySnapshot querySnapshot = await movies.get();
+    print("pura movie fetch mar rhe, Heavy read");
+    querySnapshot.docs.forEach((doc) {
+      //print("Db ka movie id ${doc['movie_id']}");
+      map[doc['movie_id']] = doc['liked'];
+    });
+    allMovies.addAll(map);
+    return map;
+  }
+
   static Future<List<Results>> searchMovies(User user,String query) async{
     var url = Uri.parse(tmdb_base_url+'search/movie?api_key='+tmdb_api_key+language+"&query=${query}&include_adult=false");
     var response = await http.get(url);
@@ -57,17 +74,11 @@ class CommonData{
 
     //enter new values in db
 
-    WriteBatch batch = FirebaseFirestore.instance.batch();
-    Map<int,bool> map = new Map();
-    //get already stored movie
     CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
-    QuerySnapshot querySnapshot = await movies.get();
-    querySnapshot.docs.forEach((doc) {
-      //print("Db ka movie id ${doc['movie_id']}");
-      map[doc['movie_id']] = doc['liked'];
-    });
 
-    List<int> moviesId = new List<int>();
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    Map<int,bool> map = allMovies.length==0?await getAllMovies(movies):allMovies;
+    List<int> moviesId = [];
     for(Results r in res){
       if(!map.containsKey(r.id)){
         moviesId.add(r.id);
@@ -77,12 +88,15 @@ class CommonData{
     print("naya movie ka length ${moviesId.length}");
     for(int i in moviesId){
       // print("movie id is  ${i}");
+      allMovies[i] = false;
       DocumentReference documentReference = movies.doc(i.toString());
       batch.set(documentReference,{
         "liked":false,
         "movie_id":i
       });
     }
+
+
 
     await batch.commit();
     return res;
@@ -234,14 +248,10 @@ class CommonData{
 
   static Future<void> addNewMovieinDB(User user) async{
     WriteBatch batch = FirebaseFirestore.instance.batch();
-    Map<int,bool> map = new Map();
     //get already stored movie
     CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
-    QuerySnapshot querySnapshot = await movies.get();
-      querySnapshot.docs.forEach((doc) {
-        //print("Db ka movie id ${doc['movie_id']}");
-        map[doc['movie_id']] = doc['liked'];
-    });
+    Map<int,bool> map = allMovies.length==0?await getAllMovies(movies):allMovies;
+
 
     List<int> moviesId = new List<int>();
     for(Results r in trendingMovies){
@@ -272,13 +282,13 @@ class CommonData{
     print("naya movie ka length ${moviesId.length}");
     for(int i in moviesId){
      // print("movie id is  ${i}");
+      allMovies[i] = false;
       DocumentReference documentReference = movies.doc(i.toString());
       batch.set(documentReference,{
         "liked":false,
         "movie_id":i
       });
     }
-
     return await batch.commit();
 
   }
@@ -287,7 +297,7 @@ class CommonData{
   static Future<bool> addLikedMovie(User user,int movie_id,bool liked) async{
     CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
     //check if movieid exists
-    DocumentSnapshot documentSnapshot = await movies.doc(movie_id.toString()).get();
+    DocumentSnapshot documentSnapshot = await movies.doc(movie_id.toString()).get(); //or we can use collection with where
     if(documentSnapshot.exists){
       print(documentSnapshot.data());
         print("detail exists");
@@ -296,7 +306,8 @@ class CommonData{
           "movie_id":movie_id
         }).then((value) async{
           print("Movie added successfully "+movie_id.toString());
-         await getLikedMovies(user);
+         //await getLikedMovies(user);
+          allMovies[movie_id] = liked;
           return true;
         }).catchError((error){
           print("Failed to add movie: $error");
@@ -312,7 +323,8 @@ class CommonData{
         "movie_id":movie_id
       }).then((value) async{
         print("Movie added successfully "+movie_id.toString());
-        await getLikedMovies(user);
+        //await getLikedMovies(user);
+        allMovies[movie_id] = liked;
         return true;
       }).catchError((error){
         print("Failed to add movie: $error");
