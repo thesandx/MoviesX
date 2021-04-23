@@ -45,6 +45,36 @@ class CommonData {
     return;
   }
 
+  static dynamic returnJson(Results movie,String post){
+    return {
+      "user_id":FirebaseAuth.instance.currentUser.uid,
+      "movie_id":movie.id,
+      "post":post,
+      "title":movie.title??"NA",
+      "overview":movie.overview??"NA",
+      "releaseDate":movie.releaseDate,
+      "backdropPath":movie.backdropPath,
+      "genreIds":movie.genreIds,
+      "posterPath":movie.posterPath,
+      "date":Timestamp.now()
+    };
+  }
+
+  static Future<bool> addPost(String post,Results movie) async{
+    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+    if(movie!=null){
+      try {
+        await posts.add(returnJson(movie,post));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    else{
+      return false;
+    }
+  }
+
   static Future<Map<int, bool>> getAllMovies(CollectionReference movies) async {
     Map<int, bool> map = new Map();
     //get already stored movie
@@ -61,12 +91,18 @@ class CommonData {
   }
 
   static Future<List<Results>> searchMovies(User user, String query) async {
+    if(query==null ||query.isEmpty || query.trim().length==0){
+      return null;
+    }
     var url = Uri.parse(
         tmdb_base_url + 'search/movie?api_key=' + tmdb_api_key + language +
             "&query=${query}&include_adult=false");
     var response = await http.get(url);
     print('Response status: ${response.statusCode}');
     // print('Response body: ${response.body}');
+    if(response.statusCode>200){
+      return null;
+    }
     var data = response.body;
     var myjson = jsonDecode(data);
 

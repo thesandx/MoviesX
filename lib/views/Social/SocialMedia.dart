@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_app/views/Social/MoviePost.dart';
 import 'package:movie_app/views/Social/Profile.dart';
 
 
@@ -34,7 +35,10 @@ class _SocialMediaState extends State<SocialMedia> {
           ],
         ),
         onPressed: (){
-
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MoviePost())
+          );
         },
       ),
       body: Container(

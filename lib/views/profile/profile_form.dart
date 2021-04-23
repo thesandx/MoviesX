@@ -90,6 +90,14 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     );
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _nameController?.dispose();
+    _userNameController?.dispose();
+  }
+
   TextStyle getTextStyle(double fontSize, Color textColor) {
     return TextStyle(
       color: textColor,
