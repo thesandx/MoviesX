@@ -151,33 +151,44 @@ class _FeedState extends State<Feed> {
               Positioned(
                 bottom: 20,
                 right: 20,
-                child: StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance.collection('/users/${FirebaseAuth.instance.currentUser.uid}/movies').doc(movie.id.toString()).snapshots(),
-                  builder: (context, snapshot) {
-
-                    if (snapshot.connectionState == ConnectionState.active) {
-                      //print(snapshot.data.toString() + " ${movie.id}");
-                      return InkWell(
-                        child: Icon(Icons.favorite,
-                            size: 35,
-                            color: snapshot.data['liked'] ??
-                                false
-                                ? Colors.red.withOpacity(1.0)
-                                : Colors.white.withOpacity(0.7)),
-                        onTap: () {
-                          //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
-                          addMovie(
-                              movie.id,
-                              snapshot.data['liked'] ??
-                                  false);
-                        },
-                      );
-                    }
-                    else{
-                      return CircularProgressIndicator();
-                    }
-                  }
-                ),
+                child:  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection(
+                        '/users/${FirebaseAuth.instance.currentUser.uid}/movies').where("movie_id",isEqualTo: movie.id).
+                    snapshots(),
+                    builder: (context, snapshot) {
+                      if(snapshot.hasError){
+                        print("error aaya hai ${movie.id}");
+                      }
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        //print(snapshot.data.toString() + " ${movie.id}");
+                        bool val = snapshot.data.docs.length > 0 ? snapshot.data.docs[0]['liked']?? false:false;
+                        return InkWell(
+                          child: Icon(Icons.favorite,
+                              size: 35,
+                              color: val
+                                  ? Colors.red.withOpacity(1.0)
+                                  : Colors.white.withOpacity(0.7)),
+                          onTap: () {
+                            //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
+                            addMovie(movie.id, val ?? false);
+                          },
+                        );
+                      }
+                      else  if(snapshot.connectionState == ConnectionState.waiting){
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      else{
+                        return InkWell(
+                          child: Icon(Icons.favorite,
+                              size: 35,
+                              color:Colors.white.withOpacity(0.7)),
+                          onTap: () {
+                            addMovie(movie.id, false);
+                          },
+                        );
+                      }
+                    }),
               )
             ],
           ),

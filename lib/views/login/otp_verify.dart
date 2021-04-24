@@ -208,7 +208,7 @@ class _OtpVerficationState extends State<OtpVerfication> {
         bool userCreate = await CommonData.createUser(user) ?? true;
         if (userCreate) {
           CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
-          await CommonData.getAllMovies(movies);
+          //await CommonData.getAllMovies(movies);
           bool val = await CommonData.retriveAPIKey();
           bool isDetail = await CommonData.checkIfUserDetailExists(user);
           if (isDetail) {
