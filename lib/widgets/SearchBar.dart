@@ -36,6 +36,14 @@ class MovieSearch extends SearchDelegate{
     if(val==null || val.isEmpty|| val.length<1){
       return Text("No results found");
     }
+    if(query[0]=="@"){
+      return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return
+            searchUsers(val);
+          }
+      );
+    }
     return searchResult(val);
 
   }
@@ -46,28 +54,64 @@ class MovieSearch extends SearchDelegate{
     final String  val= query.isEmpty ? "":query.trim();
     if(val==null || val.isEmpty|| val.length<1){
       return Center(
-        child: Text("Enter movie name",
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Enter movie name",
+              style: TextStyle(
+                  fontSize: 28
+              ),
+            ),
+        Text("use @ to search users",
           style: TextStyle(
-              fontSize: 28
+              fontSize: 18
           ),
+        )
+          ],
         ),
       );
+    }
+
+    if(query[0]=="@"){
+      return searchUsers(val);
     }
 
     return searchResult(val);
 
   }
 
-  List<Results> movies = [];
+  Widget searchUsers(String val){
+    return FutureBuilder<List<dynamic>>(
+        future: CommonData.searchUsers(FirebaseAuth.instance.currentUser,val),
+        builder: (context,snapshot){
+          if (snapshot.connectionState == ConnectionState.done){
 
+            return snapshot.data.length==0 ? Center(
+              child: Text("No results found",
+                style: TextStyle(
+                    fontSize: 28
+                ),
+              ),
+            ) :
+            Container(
+              margin: EdgeInsets.only(top: kDefaultPadding / 2,left: kDefaultPadding / 2,right: kDefaultPadding / 2),
+              child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) =>
+                      smallUserCard(user: snapshot.data[index],context: context)),
+            );
+
+          }
+          return Center(child: CircularProgressIndicator());
+        });
+  }
 
   Widget searchResult(String val){
-    movies.clear();
     return FutureBuilder<List<Results>>(
         future: CommonData.searchMovies(FirebaseAuth.instance.currentUser,val),
         builder: (context,snapshot){
           if (snapshot.connectionState == ConnectionState.done){
-            movies = snapshot.data;
             return snapshot.data.length==0 ? Center(
               child: Text("No results found",
                 style: TextStyle(
@@ -90,6 +134,59 @@ class MovieSearch extends SearchDelegate{
   }
 
 
+  Widget smallUserCard({dynamic user,BuildContext context}) {
+    print("user ka detail $user");
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0)),
+      color:Colors.grey[100],
+      child: ListTile(
+        leading: Icon(Icons.account_circle,
+          size:50
+        ),
+        title: Text(user['name']?? "NA"),
+        subtitle: Text(user['user_name']?? "NA"),
+        trailing: Visibility(
+          visible: FirebaseAuth.instance.currentUser.uid!=user['user_id'],
+          child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection(
+                '/users/${FirebaseAuth.instance.currentUser.uid}/following')
+                .where("user_id", isEqualTo: user['user_id'])
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                print("error aaya hai");
+              }
+              if (snapshot.connectionState == ConnectionState.active) {
+                bool val = snapshot.data.docs.length > 0
+                    ? snapshot.data.docs[0]['liked'] ?? false
+                    : false;
+                return TextButton(
+                  onPressed: (){
+                    addFollowing(user['user_id'],!val );
+                  },
+                  child: Text("${val?"Following":"Follow"}"),
+                );
+              }
+              else if (snapshot.connectionState ==
+                  ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              }
+
+              return TextButton(
+                onPressed: (){
+                  addFollowing(user['user_id'],true );
+                },
+                child: Text("Follow"),
+              );
+            }
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget smallMovieCard({Results movie,BuildContext context}) {
     return Container(
@@ -146,7 +243,7 @@ class MovieSearch extends SearchDelegate{
                                     : Colors.white.withOpacity(0.7)),
                             onTap: () {
                               //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
-                              addMovie(movie.id, val ?? false);
+                              addMovie(movie.id, val ?? false,movie.posterPath);
                             },
                           );
                         }
@@ -159,7 +256,7 @@ class MovieSearch extends SearchDelegate{
                                 size: 35,
                                 color:Colors.white.withOpacity(0.7)),
                             onTap: () {
-                              addMovie(movie.id, false);
+                              addMovie(movie.id, false,movie.posterPath);
                             },
                           );
                         }
@@ -208,14 +305,19 @@ class MovieSearch extends SearchDelegate{
     );
   }
 
-  void addMovie(int movie_id, bool isLiked) async {
+  void addMovie(int movie_id, bool isLiked,String poster) async {
     await CommonData.addLikedMovie(
-        FirebaseAuth.instance.currentUser, movie_id, !isLiked);
+        FirebaseAuth.instance.currentUser, movie_id, !isLiked,poster);
 
   }
 
-
-
+  void addFollowing(String followingId,bool isFollow) async {
+    if (FirebaseAuth.instance.currentUser.uid == followingId) {
+      return;
+    }
+    CommonData.addFollowing(
+        FirebaseAuth.instance.currentUser.uid, followingId, isFollow);
+  }
 
 
 }

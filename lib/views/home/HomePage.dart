@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:movie_app/Services/CommonData.dart';
+import 'package:movie_app/views/Social/Profile.dart';
 import 'package:movie_app/views/Social/SocialMedia.dart';
 import 'package:movie_app/views/home/Feed.dart';
 import 'package:movie_app/views/profile/profile.dart';
@@ -58,7 +59,8 @@ class _HomePageState extends State<HomePage> {
       return SocialMedia();
     }
     if(currentIndex==2){
-      return ProfileScreen();
+      //return ProfileScreen();
+      return ProfilPage(url: "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=100&w=940");
     }
   }
 
@@ -95,14 +97,14 @@ class _HomePageState extends State<HomePage> {
         BubbleBottomBarItem(
           backgroundColor: Colors.grey,
           icon: Icon(
-            Icons.favorite_border_rounded,
+            Icons.trending_up_rounded,
             color: iconColor,
           ),
           activeIcon: Icon(
-            Icons.explore,
+            Icons.trending_up,
             color: iconActiveColor,
           ),
-          title: Text('Favorite', style: style),
+          title: Text('Explore', style: style),
         ),
         BubbleBottomBarItem(
           backgroundColor: Colors.grey,

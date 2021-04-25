@@ -20,6 +20,7 @@ class _MoviePostState extends State<MoviePost> {
   final _formKey = GlobalKey<FormState>();
   bool isMovieSelected = false;
   Results currentMovie = null;
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -53,7 +54,7 @@ class _MoviePostState extends State<MoviePost> {
       body: ModalProgressHUD(
         inAsyncCall: CommonData.isLoading,
         child: Container(
-          margin: EdgeInsets.only(left: 16, right: 16,top: 8),
+          margin: EdgeInsets.only(left: 16, right: 16, top: 8),
           child: Form(
             key: _formKey,
             child: Column(
@@ -62,11 +63,11 @@ class _MoviePostState extends State<MoviePost> {
                   controller: _movieController,
                   decoration: InputDecoration(
                     suffixIcon: InkWell(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
                           isMovieSelected = false;
                           _movieController.text = "";
-                          currentMovie=null;
+                          currentMovie = null;
                         });
                       },
                       child: Icon(
@@ -91,20 +92,23 @@ class _MoviePostState extends State<MoviePost> {
                   ),
                   focusNode: nodeMovie,
                   autofocus: true,
-                  validator: (value){
+                  validator: (value) {
                     if (value == null ||
                         value.isEmpty ||
-                        value.trim().length == 0 || currentMovie==null) {
+                        value.trim().length == 0 ||
+                        currentMovie == null) {
                       //addError(error: error);
                       return "movie name can't be empty";
                     }
                     return null;
                   },
-                  onChanged: (val){
-                    if(val!=null && val.isNotEmpty && val.trim().length>0){
+                  onChanged: (val) {
+                    if (val != null &&
+                        val.isNotEmpty &&
+                        val.trim().length > 0) {
                       setState(() {
-                            //currentMovie = null;
-                            isMovieSelected = false;
+                        //currentMovie = null;
+                        isMovieSelected = false;
                       });
                     }
                   },
@@ -112,41 +116,47 @@ class _MoviePostState extends State<MoviePost> {
                 SizedBox(
                   height: 16,
                 ),
-              Visibility(
-                visible: _movieController.text.trim().length>0 && !isMovieSelected ? true:false,
-                child: FutureBuilder<List<Results>>(
-          future: CommonData.searchMovies(FirebaseAuth.instance.currentUser,_movieController.text),
-            builder: (context,snapshot){
-                if (snapshot.connectionState == ConnectionState.done){
-                  //movies = snapshot.data;
-                  return snapshot.data.length==0 ? Center(
-                    child: Text("No results found",
-                      style: TextStyle(
-                          fontSize: 28
-                      ),
-                    ),
-                  ) :
-                  Expanded(
-                    child: Container(
-                      //height: 300,
-                     // margin: EdgeInsets.only(top: kDefaultPadding / 2,left: kDefaultPadding / 2,right: kDefaultPadding / 2),
-                      child: Scrollbar(
-                        isAlwaysShown: true,
-                        child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) =>
-                                smallMovieCard(movie: snapshot.data[index],context: context)),
-                      ),
-                    ),
-                  );
-
-                }
-                return Center(child: CircularProgressIndicator());
-            }),
-              ),
                 Visibility(
-                  visible : isMovieSelected,
+                  visible: _movieController.text.trim().length > 0 &&
+                          !isMovieSelected
+                      ? true
+                      : false,
+                  child: FutureBuilder<List<Results>>(
+                      future: CommonData.searchMovies(
+                          FirebaseAuth.instance.currentUser,
+                          _movieController.text),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          //movies = snapshot.data;
+                          return snapshot.data.length == 0
+                              ? Center(
+                                  child: Text(
+                                    "No results found",
+                                    style: TextStyle(fontSize: 28),
+                                  ),
+                                )
+                              : Expanded(
+                                  child: Container(
+                                    //height: 300,
+                                    // margin: EdgeInsets.only(top: kDefaultPadding / 2,left: kDefaultPadding / 2,right: kDefaultPadding / 2),
+                                    child: Scrollbar(
+                                      isAlwaysShown: true,
+                                      child: ListView.builder(
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: snapshot.data.length,
+                                          itemBuilder: (context, index) =>
+                                              smallMovieCard(
+                                                  movie: snapshot.data[index],
+                                                  context: context)),
+                                    ),
+                                  ),
+                                );
+                        }
+                        return Center(child: CircularProgressIndicator());
+                      }),
+                ),
+                Visibility(
+                  visible: isMovieSelected,
                   child: TextFormField(
                     controller: _postController,
                     maxLines: 5,
@@ -189,7 +199,8 @@ class _MoviePostState extends State<MoviePost> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: Text("Post",
-                              style: TextStyle(fontSize: 20, color: Colors.white)),
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white)),
                         ),
                         style: ButtonStyle(
                           backgroundColor:
@@ -211,8 +222,6 @@ class _MoviePostState extends State<MoviePost> {
     );
   }
 
-
-
   smallMovieCard({Results movie, BuildContext context}) {
     return InkWell(
       child: Container(
@@ -220,9 +229,9 @@ class _MoviePostState extends State<MoviePost> {
         margin: EdgeInsets.only(bottom: 5),
         child: Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0)),
-          color:Colors.grey[100],
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          color: Colors.grey[100],
           child: Row(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,8 +247,10 @@ class _MoviePostState extends State<MoviePost> {
                   image: DecorationImage(
                     fit: BoxFit.fill,
                     //i.e isi me adjust kro pura image,cover means jitna itna to cover kr do baki bahr bhi jaaye no probem
-                    image:NetworkImage(movie.posterPath != null
-                        ? CommonData.tmdb_base_image_url + "w300" + movie.posterPath
+                    image: NetworkImage(movie.posterPath != null
+                        ? CommonData.tmdb_base_image_url +
+                            "w300" +
+                            movie.posterPath
                         : CommonData.image_NA),
                   ),
                 ),
@@ -247,47 +258,43 @@ class _MoviePostState extends State<MoviePost> {
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                      vertical: kDefaultPadding / 2, horizontal: kDefaultPadding/4),
+                      vertical: kDefaultPadding / 2,
+                      horizontal: kDefaultPadding / 4),
                   child: RichText(
                       text: TextSpan(
                           style: TextStyle(
                               fontSize: 13.0,
                               color: Colors.black,
-                              letterSpacing: 0.5
-                          ),
+                              letterSpacing: 0.5),
                           children: <TextSpan>[
-
-                            TextSpan(
-                              text: movie.title+" - ",
-                              //overflow: TextOverflow.ellipsis //no need of it,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1
-                                  .copyWith(fontWeight: FontWeight.w800),
-                            ),
-                            TextSpan(
-                              text: movie.releaseDate.split("-")[0]+"\n",
-                              //overflow: TextOverflow.ellipsis //no need of it,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1
-                                  .copyWith(fontWeight: FontWeight.w800),
-                            ),
-
-                          ]
-                      )
-                  ),
+                        TextSpan(
+                          text: movie.title + " - ",
+                          //overflow: TextOverflow.ellipsis //no need of it,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              .copyWith(fontWeight: FontWeight.w800),
+                        ),
+                        TextSpan(
+                          text: movie.releaseDate.split("-")[0] + "\n",
+                          //overflow: TextOverflow.ellipsis //no need of it,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              .copyWith(fontWeight: FontWeight.w800),
+                        ),
+                      ])),
                 ),
               ),
             ],
           ),
         ),
       ),
-      onTap: (){
+      onTap: () {
         setState(() {
           isMovieSelected = true;
           currentMovie = movie;
-          _movieController.text=movie.title;
+          _movieController.text = movie.title;
 //          FocusScopeNode currentFocus = FocusScope.of(context);
 //          if (!currentFocus.hasPrimaryFocus) {
 //            currentFocus.unfocus();
@@ -298,44 +305,45 @@ class _MoviePostState extends State<MoviePost> {
     );
   }
 
-  addPost(BuildContext context) async{
-    if(_formKey.currentState.validate()){
+  addPost(BuildContext context) async {
+    if (_formKey.currentState.validate()) {
       setState(() {
         CommonData.isLoading = true;
       });
-      String post = _postController.text!=null?_postController.text.trim():"";
+      String post =
+          _postController.text != null ? _postController.text.trim() : "";
       Results movie = currentMovie;
       bool val = await CommonData.addPost(post, movie);
-      if(val){
+      if (val) {
         //show snackbar and navigate;
         setState(() {
-          CommonData.isLoading = false;;
+          CommonData.isLoading = false;
+          ;
         });
         showSnackbar("Your Post was sent");
-         Navigator.of(context).pop();
-      }
-      else{
+        Navigator.of(context).pop();
+      } else {
         setState(() {
-          CommonData.isLoading = false;;
+          CommonData.isLoading = false;
+          ;
         });
         //show error
         showSnackbar("Something went wrong");
       }
     }
-
   }
 
   Widget showSnackbar(String msg) {
     return SnackBar(
         content: Text(
-          msg,
-          style: GoogleFonts.nunito(
-            //textStyle: Theme.of(context).textTheme.display1,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            //fontStyle: FontStyle.italic,
-          ),
-        ));
+      msg,
+      style: GoogleFonts.nunito(
+        //textStyle: Theme.of(context).textTheme.display1,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        //fontStyle: FontStyle.italic,
+      ),
+    ));
   }
 
   @override

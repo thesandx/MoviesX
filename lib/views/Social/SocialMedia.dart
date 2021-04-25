@@ -14,16 +14,26 @@ class SocialMedia extends StatefulWidget {
 class _SocialMediaState extends State<SocialMedia> {
   int _selectedItemIndex = 0;
 
-
-  getFollowing() async{
+  getFollowing() async {
     await CommonData.fetchFollwing(FirebaseAuth.instance.currentUser);
   }
+
+  Future<Null> _refresh() {
+    return CommonData.fetchFollwing(FirebaseAuth.instance.currentUser).then((_user) {
+      setState(() {
+
+      });
+    });
+  }
+
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-   getFollowing();
+    getFollowing();
   }
 
   @override
@@ -55,91 +65,49 @@ class _SocialMediaState extends State<SocialMedia> {
               context, MaterialPageRoute(builder: (context) => MoviePost()));
         },
       ),
-      body: Scrollbar(
-        child: ListView(
-          children: [
-            Container(
-              padding: EdgeInsets.only(left: 10, right: 10, top: 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('posts')
-                            .where("user_id",whereIn: CommonData.followingUsers)
-                          .orderBy("date", descending: true)
-                          .limit(50)
-                          .snapshots(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.hasError) {
-                          return Center(child: Text('Something went wrong'));
-                        }
+      body: RefreshIndicator(
+          key: _refreshIndicatorKey,
+        onRefresh: _refresh,
+        child: Container(
+          padding: EdgeInsets.only(left: 10, right: 10, top: 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('posts')
+                      .where("user_id", whereIn: CommonData.followingUsers)
+                      .orderBy("date", descending: true)
+                      .limit(50)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Something went wrong'));
+                    }
 
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        return ListView(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                    if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.connectionState ==
+                        ConnectionState.active) {
+                      return Expanded(
+                        child: ListView(
+//                          shrinkWrap: true,
+//                          physics: NeverScrollableScrollPhysics(),
                           padding: EdgeInsets.only(top: 8),
-                          children:
-                          snapshot.data.docs.map((DocumentSnapshot document) {
-                        return buildPostSection(document);
-                          }).toList(),
-                        );
-                      }),
-                ],
-              ),
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                'Explore',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 10, right: 10, top: 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('posts')
-                          .where("user_id",whereNotIn: CommonData.followingUsers)
-                          .limit(50)
-                          .snapshots(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.hasError) {
-                          return Center(child: Text('Something went wrong'));
-                        }
-
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        return ListView(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.only(top: 8),
-                          children:
-                          snapshot.data.docs.map((DocumentSnapshot document) {
+                          children: snapshot.data.docs
+                              .map((DocumentSnapshot document) {
                             return buildPostSection(document);
                           }).toList(),
-                        );
-                      }),
-                ],
-              ),
-            ),
-          ],
+                        ),
+                      );
+                    }
+                    return Center(child: Text('No Posts.Either follow or share'));
+                  }),
+            ],
+          ),
         ),
       ),
     );
@@ -163,7 +131,7 @@ class _SocialMediaState extends State<SocialMedia> {
             height: 5,
           ),
           Visibility(
-            visible: document.data()['post'].toString().length>0,
+            visible: document.data()['post'].toString().length > 0,
             child: Text(
               "${document.data()['post'] ?? "NA"}",
               style: TextStyle(
@@ -180,21 +148,21 @@ class _SocialMediaState extends State<SocialMedia> {
                       "w400" +
                       document.data()["posterPath"] ??
                   CommonData.image_NA,
-              document.data()['movie_id'],document.id),
+              document.data()['movie_id'],
+              document.id,document.data()["posterPath"]),
           SizedBox(
             height: 5,
           ),
-            Text(
-                  "${document.data()['likes'] ?? 0} likes",
-                  style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800]),
-                ),
+          Text(
+            "${document.data()['likes'] ?? 0} likes",
+            style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[800]),
+          ),
           SizedBox(
             height: 8,
           ),
-
         ],
       ),
     );
@@ -209,13 +177,14 @@ class _SocialMediaState extends State<SocialMedia> {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        ProfilPage(url: urlProfilePhoto)));
+//                Navigator.of(context).push(MaterialPageRoute(
+//                    builder: (BuildContext context) =>
+//                        ProfilPage(url: urlProfilePhoto)));
               },
               child: CircleAvatar(
                 radius: 12,
                 backgroundImage: NetworkImage(urlProfilePhoto),
+
               ),
             ),
             SizedBox(
@@ -271,17 +240,14 @@ class _SocialMediaState extends State<SocialMedia> {
           ],
         ),
         Visibility(
-          visible: (document.data()["user_id"]!=FirebaseAuth.instance.currentUser.uid),
+          visible: false,
           child: InkWell(
             child: Text(
-              "${CommonData.followingUsers.indexOf(document.data()["user_id"]) < 0  ? "Follow":"Following"}",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.blueAccent
-              ),
+              "${CommonData.followingUsers.indexOf(document.data()["user_id"]) < 0 ? "Follow" : "Following"}",
+              style: TextStyle(fontSize: 16, color: Colors.blueAccent),
             ),
-            onTap: (){
-              addFollowing(document.data()["user_id"]);
+            onTap: () {
+              addFollowing(document.data()["user_id"],CommonData.followingUsers.indexOf(document.data()["user_id"]) < 0);
             },
           ),
         )
@@ -289,7 +255,7 @@ class _SocialMediaState extends State<SocialMedia> {
     );
   }
 
-  Stack buildPostPicture(String urlPost, int movie_id,String docId) {
+  Stack buildPostPicture(String urlPost, int movie_id, String docId,String poster) {
     return Stack(
       children: [
         Container(
@@ -317,15 +283,18 @@ class _SocialMediaState extends State<SocialMedia> {
           child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection(
-                      '/users/${FirebaseAuth.instance.currentUser.uid}/movies').where("movie_id",isEqualTo: movie_id).
-                  snapshots(),
+                      '/users/${FirebaseAuth.instance.currentUser.uid}/movies')
+                  .where("movie_id", isEqualTo: movie_id)
+                  .snapshots(),
               builder: (context, snapshot) {
-                if(snapshot.hasError){
+                if (snapshot.hasError) {
                   print("error aaya hai ${movie_id}");
                 }
                 if (snapshot.connectionState == ConnectionState.active) {
                   //print(snapshot.data.toString() + " ${movie.id}");
-                  bool val = snapshot.data.docs.length > 0 ? snapshot.data.docs[0]['liked']?? false:false;
+                  bool val = snapshot.data.docs.length > 0
+                      ? snapshot.data.docs[0]['liked'] ?? false
+                      : false;
                   return InkWell(
                     child: Icon(Icons.favorite,
                         size: 35,
@@ -334,20 +303,18 @@ class _SocialMediaState extends State<SocialMedia> {
                             : Colors.white.withOpacity(0.7)),
                     onTap: () {
                       //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
-                     addMovie(movie_id, val ?? false,docId);
+                      addMovie(movie_id, val ?? false, docId,poster);
                     },
                   );
-                }
-                else  if(snapshot.connectionState == ConnectionState.waiting){
+                } else if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
-                }
-                else{
+                } else {
                   return InkWell(
                     child: Icon(Icons.favorite,
-                        size: 35,
-                        color:Colors.white.withOpacity(0.7)),
+                        size: 35, color: Colors.white.withOpacity(0.7)),
                     onTap: () {
-                      addMovie(movie_id, false,docId);
+                      addMovie(movie_id, false, docId,poster);
                     },
                   );
                 }
@@ -372,17 +339,17 @@ class _SocialMediaState extends State<SocialMedia> {
     );
   }
 
-  void addMovie(int movie_id, bool isLiked,String docId) async {
+  void addMovie(int movie_id, bool isLiked, String docId,String poster) async {
     await CommonData.addLikedMovie(
-        FirebaseAuth.instance.currentUser, movie_id, !isLiked);
-    await CommonData.increaseLikesCount(docId,!isLiked);
-
+        FirebaseAuth.instance.currentUser, movie_id, !isLiked,poster);
+    await CommonData.increaseLikesCount(docId, !isLiked);
   }
 
-  void addFollowing(followingId) async{
-        if(FirebaseAuth.instance.currentUser.uid == followingId){
-          return;
-        }
-        CommonData.addFollowing(FirebaseAuth.instance.currentUser.uid, followingId, true);
+  void addFollowing(String followingId,bool isFollow) async {
+    if (FirebaseAuth.instance.currentUser.uid == followingId) {
+      return;
+    }
+    CommonData.addFollowing(
+        FirebaseAuth.instance.currentUser.uid, followingId, isFollow);
   }
 }

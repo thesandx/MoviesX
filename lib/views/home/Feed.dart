@@ -171,7 +171,7 @@ class _FeedState extends State<Feed> {
                                   : Colors.white.withOpacity(0.7)),
                           onTap: () {
                             //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
-                            addMovie(movie.id, val ?? false);
+                            addMovie(movie.id, val ?? false,movie.posterPath);
                           },
                         );
                       }
@@ -184,7 +184,7 @@ class _FeedState extends State<Feed> {
                               size: 35,
                               color:Colors.white.withOpacity(0.7)),
                           onTap: () {
-                            addMovie(movie.id, false);
+                            addMovie(movie.id, false,movie.posterPath);
                           },
                         );
                       }
@@ -209,9 +209,9 @@ class _FeedState extends State<Feed> {
     );
   }
 
-  void addMovie(int movie_id, bool isLiked) async {
+  void addMovie(int movie_id, bool isLiked,String poster) async {
     await CommonData.addLikedMovie(
-        FirebaseAuth.instance.currentUser, movie_id, !isLiked);
+        FirebaseAuth.instance.currentUser, movie_id, !isLiked,poster);
 
   }
 
@@ -315,7 +315,7 @@ class _FeedState extends State<Feed> {
                                   : Colors.white.withOpacity(0.7)),
                           onTap: () {
                             //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
-                            addMovie(movie.id, val ?? false);
+                            addMovie(movie.id, val ?? false,movie.posterPath);
                           },
                         );
                       }
@@ -328,7 +328,7 @@ class _FeedState extends State<Feed> {
                               size: 35,
                               color:Colors.white.withOpacity(0.7)),
                           onTap: () {
-                            addMovie(movie.id, false);
+                            addMovie(movie.id, false,movie.posterPath);
                           },
                         );
                       }

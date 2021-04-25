@@ -118,6 +118,41 @@ class CommonData {
 //    return map;
 //  }
 
+
+  static Future<List<dynamic>> searchUsers(User user,String query) async{
+    query = query.substring(1).toLowerCase();
+    if(query==null ||query.isEmpty || query.trim().length==0){
+      return [];
+    }
+
+    QuerySnapshot users = await FirebaseFirestore.instance.collection('users').get();
+    //check if doc exists
+    List<dynamic>  list = [];
+    users.docs.forEach((doc) {
+     // print(doc.data());
+      if(doc.data()['name'].toString().toLowerCase().contains(query) || doc.data()['user_name'].toString().toLowerCase().contains(query)){
+        list.add({
+          'name':doc['name'],
+          'user_name':doc['user_name'],
+          'user_id':doc.id
+        });
+      };
+    });
+    return list;
+
+//    DocumentSnapshot documentSnapshot = await users.doc(
+//        FirebaseAuth.instance.currentUser.uid).get();
+//    if (documentSnapshot.exists) {
+//      print(documentSnapshot.data());
+//      return documentSnapshot.data();
+//    }
+//    else {
+//      return null;
+//    }
+
+
+  }
+
   static Future<List<Results>> searchMovies(User user, String query) async {
     if(query==null ||query.isEmpty || query.trim().length==0){
       return null;
@@ -170,9 +205,9 @@ class CommonData {
     return res;
   }
 
-  static Future<List<String>> fetchFollwing(User user) async{
+  static Future<void> fetchFollwing(User user) async{
     QuerySnapshot following = await FirebaseFirestore.instance.collection(
-        '/users/' + user.uid + '/following').get();
+        '/users/' + user.uid + '/following').where('liked',isEqualTo: true).get();
 
     List<String> res = [];
         following.docs.forEach((doc) {
@@ -182,7 +217,7 @@ class CommonData {
         followingUsers.clear();
         followingUsers.addAll(res);
         followingUsers.add(user.uid);
-        return res;
+        return;
 
   }
 
@@ -234,6 +269,13 @@ class CommonData {
           "user_id": followerId
         });
         print("follower added successfully " + followerId);
+        if(liked){
+          followingUsers.add(followingId);
+        }
+        else{
+          followingUsers.remove(followingId);
+        }
+
         return true;
       }
     } catch (e) {
@@ -454,7 +496,7 @@ class CommonData {
 
   }
 
-  static Future<bool> addLikedMovie(User user, int movie_id, bool liked) async {
+  static Future<bool> addLikedMovie(User user, int movie_id, bool liked,String poster) async {
     CollectionReference movies = FirebaseFirestore.instance.collection(
         '/users/' + user.uid + '/movies');
     //check if movieid exists
@@ -465,7 +507,8 @@ class CommonData {
       print("detail exists");
       await movies.doc(movie_id.toString()).update({
         "liked": liked,
-        "movie_id": movie_id
+        "movie_id": movie_id,
+        "poster":poster
       }).then((value) async {
         print("Movie added successfully " + movie_id.toString());
         //await getLikedMovies(user);
@@ -481,7 +524,8 @@ class CommonData {
       //add movie
       await movies.doc(movie_id.toString()).set({
         "liked": liked,
-        "movie_id": movie_id
+        "movie_id": movie_id,
+        "poster":poster
       }).then((value) async {
         print("Movie added successfully " + movie_id.toString());
         //await getLikedMovies(user);
