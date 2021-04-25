@@ -68,6 +68,8 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
 
+      - run : flutter doctor
+
 
       - name: Current Directory
         run: pwd
