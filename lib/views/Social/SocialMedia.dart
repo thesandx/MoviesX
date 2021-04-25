@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/Social/MoviePost.dart';
 import 'package:movie_app/views/Social/Profile.dart';
@@ -54,36 +55,90 @@ class _SocialMediaState extends State<SocialMedia> {
               context, MaterialPageRoute(builder: (context) => MoviePost()));
         },
       ),
-      body: Container(
-        padding: EdgeInsets.only(left: 10, right: 10, top: 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: Scrollbar(
+        child: ListView(
           children: [
-            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('posts')
-                      .where("user_id",whereIn: CommonData.followingUsers)
-                    .orderBy("date", descending: true)
-                    .limit(50)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Something went wrong'));
-                  }
+            Container(
+              padding: EdgeInsets.only(left: 10, right: 10, top: 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('posts')
+                            .where("user_id",whereIn: CommonData.followingUsers)
+                          .orderBy("date", descending: true)
+                          .limit(50)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Something went wrong'));
+                        }
 
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  return Expanded(
-                      child: ListView(
-                    padding: EdgeInsets.only(top: 8),
-                    children:
-                        snapshot.data.docs.map((DocumentSnapshot document) {
-                      return buildPostSection(document);
-                    }).toList(),
-                  ));
-                }),
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        return ListView(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          padding: EdgeInsets.only(top: 8),
+                          children:
+                          snapshot.data.docs.map((DocumentSnapshot document) {
+                        return buildPostSection(document);
+                          }).toList(),
+                        );
+                      }),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                'Explore',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 10, right: 10, top: 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('posts')
+                          .where("user_id",whereNotIn: CommonData.followingUsers)
+                          .limit(50)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Something went wrong'));
+                        }
+
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        return ListView(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          padding: EdgeInsets.only(top: 8),
+                          children:
+                          snapshot.data.docs.map((DocumentSnapshot document) {
+                            return buildPostSection(document);
+                          }).toList(),
+                        );
+                      }),
+                ],
+              ),
+            ),
           ],
         ),
       ),
