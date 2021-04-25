@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
@@ -15,21 +16,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String name = "Loading...";
   String user_name = "Loading...";
 
-
-  void fetchProfileData() async{
+  void fetchProfileData() async {
     dynamic json = await CommonData.fetchProfileData();
     setState(() {
       name = json['name'] ?? "NA";
       user_name = json['user_name'] ?? "NA";
     });
-
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fetchProfileData();
   }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -115,15 +116,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 fontSize: 25,
                                               ),
                                             ),
-                                            Text(
-                                              '10',
-                                              style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    39, 105, 171, 1),
-                                                fontFamily: 'Nunito',
-                                                fontSize: 25,
-                                              ),
-                                            ),
+                                            StreamBuilder<QuerySnapshot>(
+                                                stream: FirebaseFirestore
+                                                    .instance
+                                                    .collection(
+                                                        '/users/${FirebaseAuth.instance.currentUser.uid}/follower')
+                                                    .where("liked",
+                                                        isEqualTo: true)
+                                                    .snapshots(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.active) {
+                                                    return Text(
+                                                      '${snapshot.data.size ?? 0}',
+                                                      style: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            39, 105, 171, 1),
+                                                        fontFamily: 'Nunito',
+                                                        fontSize: 25,
+                                                      ),
+                                                    );
+                                                  }
+                                                  return Text(
+                                                    '0',
+                                                    style: TextStyle(
+                                                      color: Color.fromRGBO(
+                                                          39, 105, 171, 1),
+                                                      fontFamily: 'Nunito',
+                                                      fontSize: 25,
+                                                    ),
+                                                  );
+                                                }),
                                           ],
                                         ),
                                         Padding(
@@ -151,15 +175,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 fontSize: 25,
                                               ),
                                             ),
-                                            Text(
-                                              '1',
-                                              style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    39, 105, 171, 1),
-                                                fontFamily: 'Nunito',
-                                                fontSize: 25,
-                                              ),
-                                            ),
+                                            StreamBuilder<QuerySnapshot>(
+                                                stream: FirebaseFirestore
+                                                    .instance
+                                                    .collection(
+                                                        '/users/${FirebaseAuth.instance.currentUser.uid}/following')
+                                                    .where("liked",
+                                                        isEqualTo: true)
+                                                    .snapshots(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                      .connectionState ==
+                                                      ConnectionState.active) {
+                                                    return Text(
+                                                      '${snapshot.data.size ?? 0}',
+                                                      style: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            39, 105, 171, 1),
+                                                        fontFamily: 'Nunito',
+                                                        fontSize: 25,
+                                                      ),
+                                                    );
+                                                  }
+                                                  return Text(
+                                                    '0',
+                                                    style: TextStyle(
+                                                      color: Color.fromRGBO(
+                                                          39, 105, 171, 1),
+                                                      fontFamily: 'Nunito',
+                                                      fontSize: 25,
+                                                    ),
+                                                  );
+                                                })
                                           ],
                                         ),
                                       ],
@@ -177,11 +224,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   color: Colors.grey[700],
                                   size: 30,
                                 ),
-                                onTap: (){
+                                onTap: () {
                                   Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => CompleteProfile(FirebaseAuth.instance.currentUser))
-                                  );
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => CompleteProfile(
+                                              FirebaseAuth
+                                                  .instance.currentUser)));
                                 },
                               ),
                             ),
@@ -269,7 +318,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 fontFamily: 'Nunito',
                               ),
                             ),
-                            onTap: () async{
+                            onTap: () async {
                               await FirebaseAuth.instance.signOut();
                               Navigator.pushAndRemoveUntil(
                                   context,

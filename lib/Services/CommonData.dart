@@ -28,6 +28,7 @@ class CommonData {
   static List<Results> upcomingMovies = new List<Results>();
   static List<Results> popularMovies = new List<Results>();
   static List<Show> trendingTv = new List<Show>();
+  static List<String> followingUsers = [];
 
   static Map<int, bool> likedMovies = new Map();
   //static Map<int, bool> allMovies = new Map();
@@ -82,7 +83,8 @@ class CommonData {
       "backdropPath":movie.backdropPath,
       "genreIds":movie.genreIds,
       "posterPath":movie.posterPath,
-      "date":Timestamp.now()
+      "date":Timestamp.now(),
+      "likes":0
     };
   }
 
@@ -166,6 +168,79 @@ class CommonData {
 
     //await batch.commit();
     return res;
+  }
+
+  static Future<List<String>> fetchFollwing(User user) async{
+    QuerySnapshot following = await FirebaseFirestore.instance.collection(
+        '/users/' + user.uid + '/following').get();
+
+    List<String> res = [];
+        following.docs.forEach((doc) {
+          res.add(doc['user_id']);
+          print("${doc['user_id']}");
+    });
+        followingUsers.clear();
+        followingUsers.addAll(res);
+        followingUsers.add(user.uid);
+        return res;
+
+  }
+
+  static Future<bool> addFollowing(String followerId,String followingId,bool liked) async{
+
+    try {
+      CollectionReference following = FirebaseFirestore.instance.collection(
+          '/users/' + followerId + '/following');
+      DocumentSnapshot documentSnapshot = await following.doc(followingId).get();
+      if (documentSnapshot.exists) {
+        print(documentSnapshot.data());
+        print("detail exists");
+        await following.doc(followingId).update({
+          "liked": liked,
+          "user_id": followingId
+        });
+      }
+      else {
+        //create moviedid
+        //add movie
+        await following.doc(followingId).set({
+          "liked": liked,
+          "user_id": followingId
+        });
+        print("following added successfully " + followingId);
+      }
+
+
+      //addFollower
+      CollectionReference follower = FirebaseFirestore.instance.collection(
+          '/users/' + followingId + '/follower');
+
+
+      DocumentSnapshot documentSnapshot1 = await follower.doc(followerId).get();
+      if (documentSnapshot1.exists) {
+        print(documentSnapshot1.data());
+        print("detail exists");
+        await follower.doc(followerId).update({
+          "liked": liked,
+          "user_id": followerId
+        });
+        return true;
+      }
+      else {
+        //create moviedid
+        //add movie
+        await follower.doc(followerId).set({
+          "liked": liked,
+          "user_id": followerId
+        });
+        print("follower added successfully " + followerId);
+        return true;
+      }
+    } catch (e) {
+      // TODO
+      print("error aa gya");
+      return false;
+    }
   }
 
   static Future<List<Results>> findPopularMovies() async {
@@ -359,6 +434,25 @@ class CommonData {
 //    return await batch.commit();
 //  }
 
+  static Future<bool> increaseLikesCount(String docId,bool increase) async{
+    CollectionReference posts = await FirebaseFirestore.instance.collection(
+        'posts');
+    DocumentSnapshot documentSnapshot = await posts.doc(docId).get();
+
+    if (documentSnapshot.exists) {
+
+      await  posts.doc(docId).update({
+        "likes": increase?documentSnapshot.data()['likes']+1:documentSnapshot.data()['likes']>0?documentSnapshot.data()['likes']-1:documentSnapshot.data()['likes'],
+      }).then((value){
+        print("likes increased");
+        return true;
+      }).catchError((error) {
+        print("Failed to add likes: $error");
+        return false;
+      });
+    }
+
+  }
 
   static Future<bool> addLikedMovie(User user, int movie_id, bool liked) async {
     CollectionReference movies = FirebaseFirestore.instance.collection(
