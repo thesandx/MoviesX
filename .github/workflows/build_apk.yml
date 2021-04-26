@@ -71,6 +71,18 @@ jobs:
       - run : flutter doctor
       - run: pwd
       - run: ls
+      - name : keytool in app
+        working-directory: ./android/app
+        run : |
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=sandeep jha, OU=iiitb, O=iiitb, L=darbhanga, ST=bihar, C=in"
+            keytool -list -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android
+      - name : keytool in .android
+        working-directory: /home/runner/.android/
+        run : |
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=sandeep jha, OU=iiitb, O=iiitb, L=darbhanga, ST=bihar, C=in"
+            keytool -list -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android
+
+
       - name : cd android
         working-directory: ./android
         run : |
