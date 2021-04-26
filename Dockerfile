@@ -29,4 +29,13 @@ ENV PATH "$PATH:/home/developer/flutter/bin"
 RUN flutter doctor
 
 RUN git clone https://github.com/thesandx/MoviesX.git
-RUN cd MoviesX && flutter devices
+
+RUN cd MoviesX/android/app
+RUN cp "debug.keystore" "/home/developer/.android/debug.keystore"
+RUN cd ..
+RUN gradle wrapper --gradle-version 6.7
+RUN chmod +x gradlew
+RUN ./gradlew signinReport
+RUN cd ..
+RUN flutter --version
+
