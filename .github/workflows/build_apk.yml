@@ -67,7 +67,6 @@ jobs:
           channel: "stable"
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
-      - uses : actions/checkout@master
 
       - run : flutter doctor
       - run: pwd
@@ -85,10 +84,8 @@ jobs:
 
       - name : Copy debug.keystore
         working-directory : ./android/app
-        uses : canastro/copy-file-action@master
-        with :
-          source : "debug.keystore"
-          target : "/home/runner/.android/debug.keystore"
+        run : |
+          cp "debug.keystore" "/home/runner/.android/debug.keystore"
       - name : cd android
         working-directory : ./android
         run : |
