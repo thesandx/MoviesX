@@ -100,6 +100,7 @@ class _LoginOtpState extends State<LoginOtp> {
                             Form(
                               key: formKey,
                               child: TextFormField(
+                                key: ValueKey("mobile_tf"),
                                 keyboardType: TextInputType.number,
                                 maxLength: 10,
                                 controller: _phoneController,
@@ -139,6 +140,7 @@ class _LoginOtpState extends State<LoginOtp> {
                     ),
                   ),
                   Button(
+                    key: ValueKey("otp_btn"),
                     size: size,
                     text: "Send OTP",
                     press: () {
