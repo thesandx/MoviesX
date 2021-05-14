@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
 import 'package:movie_app/views/home/HomePage.dart';
 import 'package:movie_app/views/login/otp_verify.dart';
@@ -12,6 +13,7 @@ class LoginOtp extends StatefulWidget {
 }
 
 class _LoginOtpState extends State<LoginOtp> {
+  final _logger = Logger('com.thesandx.movie_app');
   @override
   void initState() {
     super.initState();
@@ -142,6 +144,7 @@ class _LoginOtpState extends State<LoginOtp> {
                     press: () {
                       if (formKey.currentState.validate()) {
                         final phone = _phoneController.text.trim();
+                        _logger.info("send otp button pressed with phone no. $phone");
 
                         Navigator.push(
                           context,

@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/Social/Profile.dart';
 import 'package:movie_app/views/Social/SocialMedia.dart';
@@ -22,6 +23,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final _logger = Logger('com.thesandx.movie_app');
   User user;
   _HomePageState(this.user);
   int currentIndex;
@@ -53,12 +55,15 @@ class _HomePageState extends State<HomePage> {
 
   Widget getCurrentPage() {
     if (currentIndex == 1) {
+      _logger.info("going to trending page");
       return Feed();
     }
     if(currentIndex==0){
+      _logger.info("going to feed page");
       return SocialMedia();
     }
     if(currentIndex==2){
+      _logger.info("going to profile page");
       //return ProfileScreen();
       return ProfilPage(url: "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=100&w=940");
     }
