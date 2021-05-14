@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/Social/MoviePost.dart';
 import 'package:movie_app/views/Social/Profile.dart';
@@ -13,6 +14,8 @@ class SocialMedia extends StatefulWidget {
 
 class _SocialMediaState extends State<SocialMedia> {
   int _selectedItemIndex = 0;
+
+  final _logger = Logger('com.thesandx.movie_app');
 
   getFollowing() async {
     await CommonData.fetchFollwing(FirebaseAuth.instance.currentUser);
@@ -340,6 +343,7 @@ class _SocialMediaState extends State<SocialMedia> {
   }
 
   void addMovie(int movie_id, bool isLiked, String docId,String poster) async {
+    _logger.info("movie liked $movie_id ${!isLiked}");
     await CommonData.addLikedMovie(
         FirebaseAuth.instance.currentUser, movie_id, !isLiked,poster);
     await CommonData.increaseLikesCount(docId, !isLiked);

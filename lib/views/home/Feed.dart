@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/models/Show.dart';
@@ -25,6 +26,8 @@ class _FeedState extends State<Feed> {
   int initialPage;
   CarouselController buttonCarouselController;
   bool _enabled = true;
+
+  final _logger = Logger('com.thesandx.movie_app');
 
   //List<Results> movies = new List<Results>();
 
@@ -210,6 +213,7 @@ class _FeedState extends State<Feed> {
   }
 
   void addMovie(int movie_id, bool isLiked,String poster) async {
+    _logger.info("movie liked $movie_id ${!isLiked}");
     await CommonData.addLikedMovie(
         FirebaseAuth.instance.currentUser, movie_id, !isLiked,poster);
 
