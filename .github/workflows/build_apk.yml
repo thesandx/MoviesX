@@ -87,16 +87,16 @@ jobs:
         working-directory : ./android/app
         run : |
           cp "debug.keystore" "/home/runner/.android/debug.keystore"
-      - name : cd android
-        working-directory : ./android
-        run : |
-            pwd
-            ls
-            gradle wrapper --gradle-version 6.7
-            ls
-            chmod +x gradlew
-            ./gradlew signingReport
-            pwd
+#      - name : cd android
+#        working-directory : ./android
+#        run : |
+#            pwd
+#            ls
+#            gradle wrapper --gradle-version 6.7
+#            ls
+#            chmod +x gradlew
+#            ./gradlew signingReport
+#            pwd
 
       - run : pwd
       - run: dart --version
