@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/Social/MoviePost.dart';
 import 'package:movie_app/views/Social/Profile.dart';
+import 'package:movie_app/views/movie_detail/MovieDetails.dart';
 
 class SocialMedia extends StatefulWidget {
   @override
@@ -261,24 +262,27 @@ class _SocialMediaState extends State<SocialMedia> {
   Stack buildPostPicture(String urlPost, int movie_id, String docId,String poster) {
     return Stack(
       children: [
-        Container(
-          height: MediaQuery.of(context)
-              .size
-              .width, //-70 height me width liya hai intresting,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 20,
-                  offset: Offset(0, 10),
-                ),
-              ],
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: NetworkImage(urlPost),
-              )),
+        InkWell(
+          onTap: ()=> Navigator.push(context,  MaterialPageRoute(builder: (context) => MovieDetails(movie_id))),
+          child: Container(
+            height: MediaQuery.of(context)
+                .size
+                .width, //-70 height me width liya hai intresting,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    spreadRadius: 2,
+                    blurRadius: 20,
+                    offset: Offset(0, 10),
+                  ),
+                ],
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: NetworkImage(urlPost),
+                )),
+          ),
         ),
         Positioned(
           bottom: 20,

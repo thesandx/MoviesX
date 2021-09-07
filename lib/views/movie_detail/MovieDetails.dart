@@ -107,7 +107,7 @@ class _MovieDetailsState extends State<MovieDetails> {
                       Row(
                         children: <Widget>[
                           Text(
-                            '${movie.releaseDate.split("-")[0]}',
+                            movie.releaseDate.trim().length>0?'${movie.releaseDate.split("-")[0]}':"",
                             style: TextStyle(color: Color(0xFF9A9BB2)),
                           ),
                           SizedBox(width: 20),
@@ -117,7 +117,7 @@ class _MovieDetailsState extends State<MovieDetails> {
                           ),
                           SizedBox(width: 20),
                           Text(
-                            "${(movie.runtime / 60).floor()}h ${movie.runtime % 60}min",
+                            movie.runtime!=null?"${(movie.runtime / 60).floor()}h ${movie.runtime % 60}min":"",
                             style: TextStyle(color: Color(0xFF9A9BB2)),
                           ),
                         ],
@@ -164,7 +164,7 @@ class _MovieDetailsState extends State<MovieDetails> {
               horizontal: 20,
             ),
             child: Text(
-              "Plot Summary",
+              movie.overview.trim().length>0?"Plot Summary":"",
               textAlign: TextAlign.left,
               style: Theme.of(context).textTheme.headline5,
             ),
@@ -185,7 +185,7 @@ class _MovieDetailsState extends State<MovieDetails> {
               horizontal: 20,
             ),
             child: Text(
-              "Production",
+              movie.productionCompanies.length>0?"Production":"",
               textAlign: TextAlign.left,
               style: Theme.of(context).textTheme.headline5,
             ),

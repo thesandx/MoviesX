@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/Services/CommonData.dart';
+import 'package:movie_app/views/movie_detail/MovieDetails.dart';
 import 'package:movie_app/views/profile/profile_edit.dart';
 
 import '../SplashScreen.dart';
@@ -186,11 +187,14 @@ class _ProfilPageState extends State<ProfilPage> {
                               childAspectRatio: 5 / 6,
                               children: snapshot.data.docs
                                   .map((DocumentSnapshot document) {
-                                return buildPictureCard(
-                                    CommonData.tmdb_base_image_url +
-                                            "w300" +
-                                            document.data()["poster"] ??
-                                        CommonData.image_NA);
+                                return InkWell(
+                                  onTap: ()=> Navigator.push(context,  MaterialPageRoute(builder: (context) => MovieDetails(document.data()["movie_id"]))),
+                                  child: buildPictureCard(
+                                      CommonData.tmdb_base_image_url +
+                                              "w300" +
+                                              document.data()["poster"] ??
+                                          CommonData.image_NA),
+                                );
                               }).toList(),
                             );
                           } else {

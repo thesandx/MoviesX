@@ -286,17 +286,20 @@ class _FeedState extends State<Feed> {
         Expanded(
           child: Stack(
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
-                margin: EdgeInsets.symmetric(horizontal: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  boxShadow: [kDefaultShadow],
-                  image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage(movie.posterPath != null
-                        ? CommonData.tmdb_base_image_url + "w400" + movie.posterPath
-                        : CommonData.image_NA),
+              InkWell(
+                onTap: ()=> Navigator.push(context,  MaterialPageRoute(builder: (context) => MovieDetails(movie.id))),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
+                  margin: EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [kDefaultShadow],
+                    image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: NetworkImage(movie.posterPath != null
+                          ? CommonData.tmdb_base_image_url + "w400" + movie.posterPath
+                          : CommonData.image_NA),
+                    ),
                   ),
                 ),
               ),
