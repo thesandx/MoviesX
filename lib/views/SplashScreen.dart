@@ -24,9 +24,8 @@ class _SplashScreenState extends State<SplashScreen> {
       if (user != null) {
         print(user.phoneNumber);
         CommonData.retriveAPIKey().then((value) async{
-          CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
+          //CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
            await CommonData.fetchFollwing(FirebaseAuth.instance.currentUser);
-
 
           if (value) {
             //print(CommonData.tmdb_api_key);

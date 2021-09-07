@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:movie_app/main.dart';
+import 'package:movie_app/models/MovieDetailModel.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/models/Show.dart';
 import 'package:movie_app/models/TrendingMovies.dart';
@@ -356,6 +357,26 @@ class CommonData {
     print(trendingMovies.results.length);
     return trendingMovies.results;
   }
+
+
+  static Future<MovieDetailModel> getMovieDetail (int movie_id) async {
+    print("movie id is $movie_id");
+    var url = Uri.parse(
+        tmdb_base_url + 'movie/$movie_id?api_key=' + tmdb_api_key);
+    print(url);
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+    var data = response.body;
+
+
+    var myjson = jsonDecode(data);
+    //print(myjson);
+    MovieDetailModel detailModel = MovieDetailModel.fromJson(myjson);
+    return detailModel;
+  }
+
+
 
   static Future<List<Show>> findTrendingShows() async {
     var url = Uri.parse(

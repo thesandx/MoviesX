@@ -22,7 +22,6 @@ class _MoviePostState extends State<MoviePost> {
   final _formKey = GlobalKey<FormState>();
   bool isMovieSelected = false;
   Results currentMovie = null;
- ""
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -321,7 +320,6 @@ class _MoviePostState extends State<MoviePost> {
         _logger.info("movie posted ${movie.title??"NA"} $post");
         setState(() {
           CommonData.isLoading = false;
-          ;
         });
 
         showSnackbar("Your Post was sent");
