@@ -311,7 +311,7 @@ class _MovieDetailsState extends State<MovieDetails> {
               );
             }
             else{
-              SizedBox(height: 0);
+               return SizedBox(height: 0);
             }
 
           }
