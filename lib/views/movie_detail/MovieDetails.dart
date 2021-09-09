@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
+import 'package:movie_app/models/WatchProvider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../constants.dart';
@@ -213,6 +214,8 @@ class _MovieDetailsState extends State<MovieDetails> {
               ),
             ),
           ),
+          //Watch on
+          getWatchProvider(movie_id),
           //production companies
           Padding(
             padding: EdgeInsets.symmetric(
@@ -261,6 +264,61 @@ class _MovieDetailsState extends State<MovieDetails> {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Chip(label: Text(production.name))
     );
+  }
+
+  Widget WatchProviderCard({Flatrate flatrate}) {
+    return  Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Chip(label: Text(flatrate.providerName))
+    );
+  }
+
+  Widget getWatchProvider(int movie_id) {
+
+    return FutureBuilder<WatchProvider>(
+        future: CommonData.getWatchProvider(movie_id),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if(snapshot.hasData && snapshot.data.results.iN!=null && snapshot.data.results.iN.flatrate!=null && snapshot.data.results.iN.flatrate.length>0){
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: kDefaultPadding / 2,
+                      horizontal: kDefaultPadding,
+                    ),
+                    child: Text(
+                      "Watch On",
+                      textAlign: TextAlign.left,
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10 / 2),
+                    child: SizedBox(
+                      height: 36,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: snapshot.data.results.iN.flatrate.length,
+                        itemBuilder: (context, index) => WatchProviderCard(
+                            flatrate : snapshot.data.results.iN.flatrate[index]
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+            else{
+              SizedBox(height: 0);
+            }
+
+          }
+          return SizedBox(height: 0);
+        }
+    );
+
   }
 
 //  Widget shimmerScreen(){

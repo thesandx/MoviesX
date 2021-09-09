@@ -10,6 +10,7 @@ import 'package:movie_app/models/Show.dart';
 import 'package:movie_app/models/TrendingMovies.dart';
 import 'package:http/http.dart' as http;
 import 'package:movie_app/models/TrendingShows.dart';
+import 'package:movie_app/models/WatchProvider.dart';
 
 class CommonData {
 
@@ -356,6 +357,22 @@ class CommonData {
     TrendingMovies trendingMovies = TrendingMovies.fromJson(myjson);
     print(trendingMovies.results.length);
     return trendingMovies.results;
+  }
+
+  static Future<WatchProvider> getWatchProvider(int movie_id) async{
+    var url = Uri.parse(
+        tmdb_base_url + 'movie/$movie_id/watch/providers?api_key=' + tmdb_api_key);
+    print(url);
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+    var data = response.body;
+
+
+    var myjson = jsonDecode(data);
+    //print(myjson);
+    WatchProvider watchProvider = WatchProvider.fromJson(myjson);
+    return watchProvider;
   }
 
 
