@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../constants.dart';
 
 class MovieDetails extends StatefulWidget {
   int movie_id;
@@ -42,9 +45,11 @@ class _MovieDetailsState extends State<MovieDetails> {
         children: [
           //poster and rating
           Container(
-            height: size.height * 0.4,
+
+            height: size.height * 0.4 ,
             child: Stack(
               children: [
+                //poster
                 Container(
                   height: size.height * 0.4 - 50,
                   decoration: BoxDecoration(
@@ -59,26 +64,56 @@ class _MovieDetailsState extends State<MovieDetails> {
                             : CommonData.image_NA),
                       )),
                 ),
+                //todo  - animation
                 Positioned(
                     bottom: 0,
                     right: 0,
-                    child: Container(
-                      width: size.width * 0.9,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(50),
-                            bottomLeft: Radius.circular(50)),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(0, 5),
-                            blurRadius: 50,
-                            color: Color(0xFF12153D).withOpacity(0.2),
+                    child: Visibility(
+                      visible: movie.voteCount>0,
+                      child: Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(50),
+                              bottomLeft: Radius.circular(50)),
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0, 5),
+                              blurRadius: 50,
+                              color: Color(0xFF12153D).withOpacity(0.2),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal:kDefaultPadding),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  SvgPicture.asset("assets/icons/star_fill.svg"),
+                                  SizedBox(height: kDefaultPadding / 4),
+                                  RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(color: Colors.black),
+                                      children: [
+                                        TextSpan(
+                                          text: "${movie.voteAverage}/",
+                                          style: TextStyle(
+                                              fontSize: 16, fontWeight: FontWeight.w600),
+                                        ),
+                                        TextSpan(text: "10\n"),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                      child: Row(),
                     ))
               ],
             ),
