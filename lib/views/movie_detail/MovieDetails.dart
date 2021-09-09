@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:movie_app/Services/CommonData.dart';
+import 'package:movie_app/models/MovieCasts.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
 import 'package:movie_app/models/WatchProvider.dart';
+import 'package:movie_app/widgets/MyBackButton.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../constants.dart';
@@ -115,7 +117,15 @@ class _MovieDetailsState extends State<MovieDetails> {
                           ),
                         ),
                       ),
-                    ))
+                    )),
+                Positioned(
+                    top:40,
+                    left:20,
+                    child: InkWell(
+                      onTap: ()=>Navigator.pop(context),
+                        child: MyBackButton()
+                    )
+                )
               ],
             ),
           ),
@@ -143,14 +153,14 @@ class _MovieDetailsState extends State<MovieDetails> {
                       Row(
                         children: <Widget>[
                           Text(
-                            movie.releaseDate.trim().length>0?'${movie.releaseDate.split("-")[0]}':"",
+                            movie.releaseDate.trim().length>0?'${movie.releaseDate}':"",
                             style: TextStyle(color: Color(0xFF9A9BB2)),
                           ),
-                          SizedBox(width: 20),
-                          Text(
-                            movie.adult ? "18+" : "PG-13",
-                            style: TextStyle(color: Color(0xFF9A9BB2)),
-                          ),
+//                          SizedBox(width: 20),
+//                          Text(
+//                            movie.adult ? "18+" : "PG-13",
+//                            style: TextStyle(color: Color(0xFF9A9BB2)),
+//                          ),
                           SizedBox(width: 20),
                           Text(
                             movie.runtime!=null?"${(movie.runtime / 60).floor()}h ${movie.runtime % 60}min":"",
@@ -216,6 +226,7 @@ class _MovieDetailsState extends State<MovieDetails> {
           ),
           //Watch on
           getWatchProvider(movie_id),
+          getMovieCasts(movie_id),
           //production companies
           Padding(
             padding: EdgeInsets.symmetric(
@@ -250,6 +261,43 @@ class _MovieDetailsState extends State<MovieDetails> {
     }
   }
 
+  Widget CastCard({Cast cast}){
+    return Container(
+      margin: EdgeInsets.only(right: kDefaultPadding),
+      width: 80,
+      child: Column(
+        children: <Widget>[
+          Container(
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image:  NetworkImage(cast.profilePath != null
+              ? CommonData.tmdb_base_image_url +
+              "w300" +
+              cast.profilePath
+                  : CommonData.image_NA),
+              ),
+            ),
+          ),
+          SizedBox(height: kDefaultPadding / 2),
+          Text(
+            cast.name??"NA",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyText2,
+            maxLines: 2,
+          ),
+          SizedBox(height: kDefaultPadding / 4),
+          Text(
+            cast.character??"NA",
+            maxLines: 1,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: kTextLightColor),
+          ),
+        ],
+      ),
+    );
+  }
   Widget GenreCard({Genres genre}) {
     
     return Padding(
@@ -312,6 +360,52 @@ class _MovieDetailsState extends State<MovieDetails> {
             }
             else{
                return SizedBox(height: 0);
+            }
+
+          }
+          return SizedBox(height: 0);
+        }
+    );
+
+  }
+
+  Widget getMovieCasts(int movie_id) {
+
+    return FutureBuilder<MovieCasts>(
+        future: CommonData.getmovieCasts(movie_id),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if(snapshot.hasData && snapshot.data.cast!=null && snapshot.data.cast.length>0){
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: kDefaultPadding / 2,
+                      horizontal: kDefaultPadding,
+                    ),
+                    child: Text(
+                      "Casts",
+                      textAlign: TextAlign.left,
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                  ),
+                  SizedBox(height: kDefaultPadding),
+                  SizedBox(
+                    height: 160,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: (snapshot.data.cast.length>10)?10:snapshot.data.cast.length,
+                      itemBuilder: (context, index) => CastCard(cast: snapshot.data.cast[index]),
+                    ),
+                  )
+
+
+                ],
+              );
+            }
+            else{
+              return SizedBox(height: 0);
             }
 
           }

@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      backgroundColor: kTextLightColor,
+      backgroundColor: Colors.white,
       body: getCurrentPage(),
       bottomNavigationBar: Container(height: 60, child: BottomNavigationBar()),
     );

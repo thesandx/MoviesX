@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:movie_app/main.dart';
+import 'package:movie_app/models/MovieCasts.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/models/Show.dart';
@@ -373,6 +374,22 @@ class CommonData {
     //print(myjson);
     WatchProvider watchProvider = WatchProvider.fromJson(myjson);
     return watchProvider;
+  }
+
+  static Future<MovieCasts> getmovieCasts(int movie_id) async{
+    var url = Uri.parse(
+        tmdb_base_url + 'movie/$movie_id/credits?api_key=' + tmdb_api_key);
+    print(url);
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+    var data = response.body;
+
+
+    var myjson = jsonDecode(data);
+    //print(myjson);
+    MovieCasts movieCasts= MovieCasts.fromJson(myjson);
+    return movieCasts;
   }
 
 
