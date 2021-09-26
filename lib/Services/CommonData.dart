@@ -551,6 +551,48 @@ class CommonData {
 
   }
 
+  static Future<QuerySnapshot> getAllPlaylist(User user) async{
+    CollectionReference playlist = FirebaseFirestore.instance.collection(
+        '/users/' + user.uid + '/playlist');
+
+    return playlist.orderBy("name").get();
+
+    //ref-  https://firebase.flutter.dev/docs/firestore/usage#document--query-snapshots
+
+  }
+
+  static Future<bool> addDefaultPlaylist(User user) async{
+    CollectionReference playlist = FirebaseFirestore.instance.collection(
+        '/users/' + user.uid + '/playlist');
+
+    //check if watch later exists
+    DocumentSnapshot documentSnapshot = await playlist.doc("watch later")
+        .get();
+
+    if (documentSnapshot.exists) {
+      //check if this movie is here or not
+      print("playlist already exists");
+    }
+
+    else{
+      //create watch later playlist
+      await playlist.doc("watch later").set({
+        "name":"watch later"
+      }).then((value) async {
+        print("playlist added successfully");
+        //await getLikedMovies(user);
+        // allMovies[movie_id] = liked;
+        return true;
+      }).catchError((error) {
+        print("Failed to add playlist: $error");
+        return false;
+      });
+    }
+
+
+
+  }
+
   static Future<bool> addLikedMovie(User user, int movie_id, bool liked,String poster) async {
     CollectionReference movies = FirebaseFirestore.instance.collection(
         '/users/' + user.uid + '/movies');
