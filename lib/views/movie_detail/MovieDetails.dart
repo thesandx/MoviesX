@@ -44,9 +44,8 @@ class _MovieDetailsState extends State<MovieDetails> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     _nameController?.dispose();
+    super.dispose();
   }
 
   Widget screen(AsyncSnapshot<MovieDetailModel> modelSnapShot) {
@@ -497,6 +496,7 @@ class _MovieDetailsState extends State<MovieDetails> {
   final _nameController = TextEditingController();
   String fullName;
   bool showError = false;
+  String playListName = "";
 
   Widget buildNameFormField() {
     return Form(
@@ -507,8 +507,11 @@ class _MovieDetailsState extends State<MovieDetails> {
           TextFormField(
             controller: _nameController,
             onSaved: (newValue) => fullName = newValue,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             onChanged: (value) {
-              if (value.isNotEmpty) {
+              if (value.isNotEmpty && value!=playListName) {
+                showError = false;
+                _formKey.currentState.validate();
                 return null;
               }
               return null;
@@ -516,7 +519,12 @@ class _MovieDetailsState extends State<MovieDetails> {
             validator: (value) {
               if (value == null || value.isEmpty || value.trim().length == 0) {
                 //addError(error: error);
+                showError = false;
                 return "Name can't be empty";
+              }
+              else if(showError){
+                //showError = false;
+                return "playList already exists";
               }
               return null;
             },
@@ -564,6 +572,7 @@ class _MovieDetailsState extends State<MovieDetails> {
             actions: [
               TextButton(
                 onPressed: () {
+                  showError = false;
                   Navigator.of(context).pop();
                 },
                 child: Text('CANCEL'),
@@ -582,7 +591,13 @@ class _MovieDetailsState extends State<MovieDetails> {
                       await CommonData.createPlayList(
                           FirebaseAuth.instance.currentUser,
                           _nameController.text.trim());
+                      showError = false;
                       Navigator.of(context).pop();
+                    }
+                    else{
+                      showError = true;
+                      playListName =  _nameController.text.trim();
+                      _formKey.currentState.validate();
                     }
                   }
                 },
