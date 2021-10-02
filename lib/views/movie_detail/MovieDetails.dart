@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,8 +6,6 @@ import 'package:movie_app/models/MovieCasts.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
 import 'package:movie_app/models/WatchProvider.dart';
 import 'package:movie_app/widgets/MyBackButton.dart';
-import 'package:movie_app/widgets/button.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../constants.dart';
 
@@ -456,31 +453,43 @@ class _MovieDetailsState extends State<MovieDetails> {
   }
 
   Widget bottomSheet(int movie_id) {
-    return FutureBuilder<QuerySnapshot>(
-        future: CommonData.getAllPlaylist(FirebaseAuth.instance.currentUser),
+    return FutureBuilder<List<Map>>(
+        future: CommonData.getAllPlaylist(
+            FirebaseAuth.instance.currentUser, movie_id),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return ListView.builder(
                   scrollDirection: Axis.vertical,
-                  itemCount: snapshot.data.size,
+                  itemCount: snapshot.data.length,
                   itemBuilder: (context, index) {
-                    bool curr = false;
-                    return Card(
-                      child: Container(
-                        padding: new EdgeInsets.all(10.0),
-                        child: CheckboxListTile(
-                          activeColor: Colors.pink[300],
-                          dense: true,
-                          title: Text(snapshot.data.docs[index].id,
-                              style: Theme.of(context).textTheme.headline6),
-                          value: curr,
-                          onChanged: (bool val) {
-                            curr = !curr;
-                          },
+                    bool curr = snapshot.data[index]["is_included"];
+                    return StatefulBuilder(builder:
+                        (BuildContext context, StateSetter innerSetState) {
+                      return Card(
+                        child: Container(
+                          padding: new EdgeInsets.all(10.0),
+                          child: CheckboxListTile(
+                            activeColor: Colors.pink[300],
+                            dense: true,
+                            title: Text(snapshot.data[index]["name"],
+                                style: Theme.of(context).textTheme.headline6),
+                            value: curr,
+                            onChanged: (bool val) async {
+                              print(val);
+                              innerSetState(() {
+                                curr = !curr;
+                              });
+                              await CommonData.addMovieInPlayList(
+                                  FirebaseAuth.instance.currentUser,
+                                  snapshot.data[index]["name"],
+                                  movie_id,
+                                  val);
+                            },
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    });
                   });
             } else {
               return Center(child: Text("No item found"));
@@ -509,7 +518,7 @@ class _MovieDetailsState extends State<MovieDetails> {
             onSaved: (newValue) => fullName = newValue,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             onChanged: (value) {
-              if (value.isNotEmpty && value!=playListName) {
+              if (value.isNotEmpty && value != playListName) {
                 showError = false;
                 _formKey.currentState.validate();
                 return null;
@@ -517,12 +526,13 @@ class _MovieDetailsState extends State<MovieDetails> {
               return null;
             },
             validator: (value) {
-              if (value == null || value.isEmpty || value.trim().length == 0) {
+              if (value == null || value.isEmpty || value
+                  .trim()
+                  .length == 0) {
                 //addError(error: error);
                 showError = false;
                 return "Name can't be empty";
-              }
-              else if(showError){
+              } else if (showError) {
                 //showError = false;
                 return "playList already exists";
               }
@@ -593,10 +603,9 @@ class _MovieDetailsState extends State<MovieDetails> {
                           _nameController.text.trim());
                       showError = false;
                       Navigator.of(context).pop();
-                    }
-                    else{
+                    } else {
                       showError = true;
-                      playListName =  _nameController.text.trim();
+                      playListName = _nameController.text.trim();
                       _formKey.currentState.validate();
                     }
                   }

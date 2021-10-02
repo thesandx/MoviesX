@@ -2,14 +2,12 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:movie_app/main.dart';
+import 'package:http/http.dart' as http;
 import 'package:movie_app/models/MovieCasts.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/models/Show.dart';
 import 'package:movie_app/models/TrendingMovies.dart';
-import 'package:http/http.dart' as http;
 import 'package:movie_app/models/TrendingShows.dart';
 import 'package:movie_app/models/WatchProvider.dart';
 
@@ -19,23 +17,24 @@ class CommonData {
 
   static String tmdb_api_key;
 
-  static String image_NA = "https://1.bp.blogspot.com/-JXjPS9M7MMU/XX39ZP97p4I/AAAAAAAAABE/VQYxrz_roLcXRf5m1nyxTYIxFh7KGow7wCPcBGAYYCw/s1600/df1.jpg";
+  static String image_NA =
+      "https://1.bp.blogspot.com/-JXjPS9M7MMU/XX39ZP97p4I/AAAAAAAAABE/VQYxrz_roLcXRf5m1nyxTYIxFh7KGow7wCPcBGAYYCw/s1600/df1.jpg";
 
   static String tmdb_base_url = "https://api.themoviedb.org/3/";
   static String tmdb_base_image_url = "https://image.tmdb.org/t/p/";
   static String language = "&language=en-US"; //hi-IN,en-US,en-IN
   static String region = "&region=US"; //in or us in caps
 
-  static List<Results> trendingMovies = new List<Results>();
-  static List<Results> nowPlayingMovies = new List<Results>();
-  static List<Results> upcomingMovies = new List<Results>();
-  static List<Results> popularMovies = new List<Results>();
-  static List<Show> trendingTv = new List<Show>();
+  static List<Results> trendingMovies = [];
+  static List<Results> nowPlayingMovies = [];
+  static List<Results> upcomingMovies = [];
+  static List<Results> popularMovies = [];
+  static List<Show> trendingTv = [];
   static List<String> followingUsers = [];
 
   static Map<int, bool> likedMovies = new Map();
-  //static Map<int, bool> allMovies = new Map();
 
+  //static Map<int, bool> allMovies = new Map();
 
   static Future<void> findMovieData(User user) async {
     trendingMovies = await findTrendingMovies();
@@ -538,9 +537,13 @@ class CommonData {
 
     if (documentSnapshot.exists) {
 
-      await  posts.doc(docId).update({
-        "likes": increase?documentSnapshot.data()['likes']+1:documentSnapshot.data()['likes']>0?documentSnapshot.data()['likes']-1:documentSnapshot.data()['likes'],
-      }).then((value){
+      await posts.doc(docId).update({
+        "likes": increase
+            ? documentSnapshot.data()['likes'] + 1
+            : documentSnapshot.data()['likes'] > 0
+                ? documentSnapshot.data()['likes'] - 1
+                : documentSnapshot.data()['likes'],
+      }).then((value) {
         print("likes increased");
         return true;
       }).catchError((error) {
@@ -548,15 +551,30 @@ class CommonData {
         return false;
       });
     }
-
   }
 
-  static Future<QuerySnapshot> getAllPlaylist(User user) async{
-    CollectionReference playlist = FirebaseFirestore.instance.collection(
-        '/users/' + user.uid + '/playlist');
+  static Future<List<Map>> getAllPlaylist(User user, int movie_id) async {
+    List list = <Map>[];
+    CollectionReference playlist = FirebaseFirestore.instance
+        .collection('/users/' + user.uid + '/playlist');
+    //i.e get list of documents
+    QuerySnapshot querySnapshot = await playlist.orderBy("name").get();
 
-    return playlist.orderBy("name").get();
+    querySnapshot.docs.forEach((doc) {
+      var map = {};
+      map["name"] = doc.id;
+      bool curr = false;
+      for (int i in doc["movies_id"]) {
+        if (i == movie_id) {
+          curr = true;
+          break;
+        }
+      }
+      map["is_included"] = curr;
+      list.add(map);
+    });
 
+    return list;
     //ref-  https://firebase.flutter.dev/docs/firestore/usage#document--query-snapshots
 
   }
@@ -574,7 +592,8 @@ class CommonData {
     }
     else{
       await playlist.doc(playListName).set({
-        "name":playListName
+        "name": playListName,
+        "movies_id": FieldValue.arrayUnion([])
       }).then((value) async {
         print("playlist $playListName added successfully");
         //await getLikedMovies(user);
@@ -620,7 +639,8 @@ class CommonData {
     else{
       //create watch later playlist
       await playlist.doc("watch later").set({
-        "name":"watch later"
+        "name": "watch later",
+        "movies_id": FieldValue.arrayUnion([])
       }).then((value) async {
         print("playlist added successfully");
         //await getLikedMovies(user);
@@ -631,12 +651,54 @@ class CommonData {
         return false;
       });
     }
-
-
-
   }
 
-  static Future<bool> addLikedMovie(User user, int movie_id, bool liked,String poster) async {
+  static Future<bool> addMovieInPlayList(User user, String playListName,
+      int movie_id, bool isAdd) async {
+    CollectionReference playListCollection = FirebaseFirestore.instance
+        .collection(
+        '/users/' + user.uid + '/playlist');
+    //check if movieid exists
+    DocumentSnapshot documentSnapshot = await playListCollection.doc(
+        playListName).get(); //or we can use collection with where
+    if (documentSnapshot.exists) {
+      print("detail exists");
+      // https: //firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
+      print(documentSnapshot.data());
+      if (!isAdd) {
+        //i.e delete this document
+        await playListCollection.doc(playListName).update({
+          "movies_id": FieldValue.arrayRemove([movie_id])
+        });
+        return true;
+      }
+      else {
+        await playListCollection.doc(playListName).update({
+          "movies_id": FieldValue.arrayUnion([movie_id])
+        });
+        return true;
+      }
+    }
+//    else if(isAdd){
+//      //create moviedid
+//      //add movie
+//      await playListCollection.doc(movie_id.toString()).set({
+//        "movie_id": movie_id,
+//      }).then((value) async {
+//        print("Movie added successfully to $playListName " + movie_id.toString());
+//        return true;
+//      }).catchError((error) {
+//        print("Failed to add movie: $error");
+//        return false;
+//      });
+//    }
+    else {
+      return true;
+    }
+  }
+
+  static Future<bool> addLikedMovie(User user, int movie_id, bool liked,
+      String poster) async {
     CollectionReference movies = FirebaseFirestore.instance.collection(
         '/users/' + user.uid + '/movies');
     //check if movieid exists
