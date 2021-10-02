@@ -624,19 +624,17 @@ class CommonData {
   }
 
   static Future<bool> addDefaultPlaylist(User user) async{
-    CollectionReference playlist = FirebaseFirestore.instance.collection(
-        '/users/' + user.uid + '/playlist');
+    CollectionReference playlist = FirebaseFirestore.instance
+        .collection('/users/' + user.uid + '/playlist');
 
     //check if watch later exists
-    DocumentSnapshot documentSnapshot = await playlist.doc("watch later")
-        .get();
+    DocumentSnapshot watchLaterDoc = await playlist.doc("watch later").get();
+    DocumentSnapshot watchedDoc = await playlist.doc("watched").get();
 
-    if (documentSnapshot.exists) {
+    if (watchLaterDoc.exists) {
       //check if this movie is here or not
       print("playlist already exists");
-    }
-
-    else{
+    } else {
       //create watch later playlist
       await playlist.doc("watch later").set({
         "name": "watch later",
@@ -645,13 +643,29 @@ class CommonData {
         print("playlist added successfully");
         //await getLikedMovies(user);
         // allMovies[movie_id] = liked;
-        return true;
       }).catchError((error) {
         print("Failed to add playlist: $error");
-        return false;
+      });
+    }
+
+    if (watchedDoc.exists) {
+      //check if this movie is here or not
+      print("playlist2 already exists");
+    } else {
+      //create watch later playlist
+      await playlist.doc("watched").set({
+        "name": "watched",
+        "movies_id": FieldValue.arrayUnion([])
+      }).then((value) async {
+        print("playlist2 added successfully");
+        //await getLikedMovies(user);
+        // allMovies[movie_id] = liked;
+      }).catchError((error) {
+        print("Failed to add playlist: $error");
       });
     }
   }
+
 
   static Future<bool> addMovieInPlayList(User user, String playListName,
       int movie_id, bool isAdd) async {
