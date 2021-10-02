@@ -22,6 +22,7 @@ class MovieDetails extends StatefulWidget {
 }
 
 class _MovieDetailsState extends State<MovieDetails> {
+  final _formKey = GlobalKey<FormState>();
   int movie_id;
 
   _MovieDetailsState(this.movie_id);
@@ -39,6 +40,13 @@ class _MovieDetailsState extends State<MovieDetails> {
             return Center(child: CircularProgressIndicator());
           }),
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _nameController?.dispose();
   }
 
   Widget screen(AsyncSnapshot<MovieDetailModel> modelSnapShot) {
@@ -488,74 +496,101 @@ class _MovieDetailsState extends State<MovieDetails> {
 
   final _nameController = TextEditingController();
   String fullName;
-  TextFormField buildNameFormField() {
-    return TextFormField(
-      controller: _nameController,
-      onSaved: (newValue) => fullName = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          return null;
-        }
-        return null;
-      },
-      validator: (value) {
-        if (value == null ||
-            value.isEmpty ||
-            value.trim().length == 0
-        ) {
-          //addError(error: error);
-          return "Name can't be empty";;
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Color(0xFFD4D4D4),
-            width: 1.0,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Color(0xFFD4D4D4),
-            width: 1.0,
-          ),
-        ),
-        labelText: "Name",
-        hintText: "Enter playList Name",
-        // floatingLabelBehavior: FloatingLabelBehavior.always
-      ),
+  bool showError = false;
 
+  Widget buildNameFormField() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextFormField(
+            controller: _nameController,
+            onSaved: (newValue) => fullName = newValue,
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                return null;
+              }
+              return null;
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty || value.trim().length == 0) {
+                //addError(error: error);
+                return "Name can't be empty";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD4D4D4),
+                  width: 1.0,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFD4D4D4),
+                  width: 1.0,
+                ),
+              ),
+              labelText: "Name",
+              hintText: "Enter playList Name",
+              // floatingLabelBehavior: FloatingLabelBehavior.always
+            ),
+          ),
+          Visibility(
+            visible: false,
+            child: Text(
+              "playList already exists",
+              style: TextStyle(
+                color: Colors.redAccent,
+                fontSize: 12,
+                fontFamily: 'Nunito',
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  void addPlayList(){
-      showDialog(context: context,
-          builder: (BuildContext contex) {
-            return AlertDialog(
-              title: Text("Add PlayList"),
-              content: buildNameFormField(),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('CANCEL'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    //firebase call todo
-                    //check duplicay
-                  },
-                  child: Text('CREATE'),
-                ),
-              ],
+  void addPlayList() {
+    showDialog(
+        context: context,
+        builder: (BuildContext contex) {
+          return AlertDialog(
+            title: Text("Add PlayList"),
+            content: buildNameFormField(),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('CANCEL'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  //firebase call todo
+                  //check duplicacy
+                  if (_formKey.currentState.validate()) {
+                    //no need  - not done in youtube music
+                    bool isDuplicate = await CommonData.isPlaylistAlreadyExists(
+                        FirebaseAuth.instance.currentUser,
+                        _nameController.text.trim());
 
-            );
-          }
-      );
-
-
+                    if (!isDuplicate) {
+                      await CommonData.createPlayList(
+                          FirebaseAuth.instance.currentUser,
+                          _nameController.text.trim());
+                      Navigator.of(context).pop();
+                    }
+                  }
+                },
+                child: Text('CREATE'),
+              ),
+            ],
+          );
+        });
   }
 
 //  Widget shimmerScreen(){

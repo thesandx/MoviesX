@@ -561,6 +561,49 @@ class CommonData {
 
   }
 
+  static Future<bool> createPlayList(User user,String playListName) async{
+
+    CollectionReference playlist = FirebaseFirestore.instance.collection(
+        '/users/' + user.uid + '/playlist');
+
+    DocumentSnapshot documentSnapshot = await playlist.doc(playListName)
+        .get();
+
+    if (documentSnapshot.exists) {
+      return true;
+    }
+    else{
+      await playlist.doc(playListName).set({
+        "name":playListName
+      }).then((value) async {
+        print("playlist $playListName added successfully");
+        //await getLikedMovies(user);
+        // allMovies[movie_id] = liked;
+        return true;
+      }).catchError((error) {
+        print("Failed to add playlist: $error");
+        return false;
+      });
+    }
+  }
+
+
+  static Future<bool> isPlaylistAlreadyExists(User user,String playListName) async{
+
+    CollectionReference playlist = FirebaseFirestore.instance.collection(
+        '/users/' + user.uid + '/playlist');
+
+    DocumentSnapshot documentSnapshot = await playlist.doc(playListName)
+        .get();
+
+    if (documentSnapshot.exists) {
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
   static Future<bool> addDefaultPlaylist(User user) async{
     CollectionReference playlist = FirebaseFirestore.instance.collection(
         '/users/' + user.uid + '/playlist');

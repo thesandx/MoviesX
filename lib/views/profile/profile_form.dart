@@ -39,7 +39,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           buildUserNameFormField(),
           Visibility(
             visible: showError,
-            child: Text("Userame already exists",
+            child: Text("Username already exists",
               style: TextStyle(
                 color: Colors.redAccent,
                 fontSize: 12,
