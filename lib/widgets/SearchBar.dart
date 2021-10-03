@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/views/movie_detail/MovieDetails.dart';
+
 import '../constants.dart';
 
 class MovieSearch extends SearchDelegate{
@@ -115,23 +116,27 @@ class MovieSearch extends SearchDelegate{
         future: CommonData.searchMovies(FirebaseAuth.instance.currentUser,val),
         builder: (context,snapshot){
           if (snapshot.connectionState == ConnectionState.done){
-            return snapshot.data.length==0 ? Center(
-              child: Text("No results found",
-                style: TextStyle(
-                    fontSize: 28
-                ),
-              ),
-            ) :
-            Container(
-              margin: EdgeInsets.only(top: kDefaultPadding / 2,left: kDefaultPadding / 2,right: kDefaultPadding / 2),
-              child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: snapshot.data.length,
+            return (!snapshot.hasData || snapshot.data.length == 0)
+                ? Center(
+                    child: Text(
+                      "No results found",
+                      style: TextStyle(fontSize: 28),
+                    ),
+                  )
+                : Container(
+                    margin: EdgeInsets.only(
+                        top: kDefaultPadding / 2,
+                        left: kDefaultPadding / 2,
+                        right: kDefaultPadding / 2),
+                    child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: snapshot.data.length,
                   itemBuilder: (context, index) =>
                       smallMovieCard(movie: snapshot.data[index],context: context)),
             );
 
           }
+
           return Center(child: CircularProgressIndicator());
         });
   }
@@ -219,54 +224,55 @@ class MovieSearch extends SearchDelegate{
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         //i.e isi me adjust kro pura image,cover means jitna itna to cover kr do baki bahr bhi jaaye no probem
-                        image:NetworkImage(movie.posterPath != null
-                            ? CommonData.tmdb_base_image_url + "w400" + movie.posterPath
+                        image: NetworkImage(movie.posterPath != null
+                            ? CommonData.tmdb_base_image_url + "w400" +
+                            movie.posterPath
                             : CommonData.image_NA),
                       ),
                     ),
                   ),
-                  Positioned(
-                    bottom: 20,
-                    right: 20,
-                    child:  StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection(
-                            '/users/${FirebaseAuth.instance.currentUser.uid}/movies').where("movie_id",isEqualTo: movie.id).
-                        snapshots(),
-                        builder: (context, snapshot) {
-                          if(snapshot.hasError){
-                            print("error aaya hai ${movie.id}");
-                          }
-                          if (snapshot.connectionState == ConnectionState.active) {
-                            //print(snapshot.data.toString() + " ${movie.id}");
-                            bool val = snapshot.data.docs.length > 0 ? snapshot.data.docs[0]['liked']?? false:false;
-                            return InkWell(
-                              child: Icon(Icons.favorite,
-                                  size: 35,
-                                  color: val
-                                      ? Colors.red.withOpacity(1.0)
-                                      : Colors.white.withOpacity(0.7)),
-                              onTap: () {
-                                //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
-                                addMovie(movie.id, val ?? false,movie.posterPath);
-                              },
-                            );
-                          }
-                          else  if(snapshot.connectionState == ConnectionState.waiting){
-                            return Center(child: CircularProgressIndicator());
-                          }
-                          else{
-                            return InkWell(
-                              child: Icon(Icons.favorite,
-                                  size: 35,
-                                  color:Colors.white.withOpacity(0.7)),
-                              onTap: () {
-                                addMovie(movie.id, false,movie.posterPath);
-                              },
-                            );
-                          }
-                        }),
-                  )
+//                  Positioned(
+//                    bottom: 20,
+//                    right: 20,
+//                    child:  StreamBuilder<QuerySnapshot>(
+//                        stream: FirebaseFirestore.instance
+//                            .collection(
+//                            '/users/${FirebaseAuth.instance.currentUser.uid}/movies').where("movie_id",isEqualTo: movie.id).
+//                        snapshots(),
+//                        builder: (context, snapshot) {
+//                          if(snapshot.hasError){
+//                            print("error aaya hai ${movie.id}");
+//                          }
+//                          if (snapshot.connectionState == ConnectionState.active) {
+//                            //print(snapshot.data.toString() + " ${movie.id}");
+//                            bool val = snapshot.data.docs.length > 0 ? snapshot.data.docs[0]['liked']?? false:false;
+//                            return InkWell(
+//                              child: Icon(Icons.favorite,
+//                                  size: 35,
+//                                  color: val
+//                                      ? Colors.red.withOpacity(1.0)
+//                                      : Colors.white.withOpacity(0.7)),
+//                              onTap: () {
+//                                //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
+//                                addMovie(movie.id, val ?? false,movie.posterPath);
+//                              },
+//                            );
+//                          }
+//                          else  if(snapshot.connectionState == ConnectionState.waiting){
+//                            return Center(child: CircularProgressIndicator());
+//                          }
+//                          else{
+//                            return InkWell(
+//                              child: Icon(Icons.favorite,
+//                                  size: 35,
+//                                  color:Colors.white.withOpacity(0.7)),
+//                              onTap: () {
+//                                addMovie(movie.id, false,movie.posterPath);
+//                              },
+//                            );
+//                          }
+//                        }),
+//                  )
                 ],
               ),
               Expanded(
