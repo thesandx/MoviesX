@@ -666,15 +666,21 @@ class CommonData {
     }
   }
 
-
-  static Future<bool> addMovieInPlayList(User user, String playListName,
-      int movie_id, bool isAdd) async {
+  static Future<bool> deletePlayList(String playListName, User user) async {
     CollectionReference playListCollection = FirebaseFirestore.instance
-        .collection(
-        '/users/' + user.uid + '/playlist');
+        .collection('/users/' + user.uid + '/playlist');
+    await playListCollection.doc(playListName).delete();
+    return true;
+  }
+
+  static Future<bool> addMovieInPlayList(
+      User user, String playListName, int movie_id, bool isAdd) async {
+    CollectionReference playListCollection = FirebaseFirestore.instance
+        .collection('/users/' + user.uid + '/playlist');
     //check if movieid exists
-    DocumentSnapshot documentSnapshot = await playListCollection.doc(
-        playListName).get(); //or we can use collection with where
+    DocumentSnapshot documentSnapshot = await playListCollection
+        .doc(playListName)
+        .get(); //or we can use collection with where
     if (documentSnapshot.exists) {
       print("detail exists");
       // https: //firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array

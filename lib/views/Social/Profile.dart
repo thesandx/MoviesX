@@ -178,20 +178,21 @@ class _ProfilePageState extends State<ProfilePage> {
                         if (snapshot.connectionState == ConnectionState.active) {
                           if (snapshot.data.docs.length > 0) {
                             return GridView.count(
-                              padding:
-                                  EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 8),
                               crossAxisCount: 2,
                               crossAxisSpacing: 5,
                               mainAxisSpacing: 5,
-                              childAspectRatio: 5 / 6,
+                              childAspectRatio: 6 / 5,
                               children: snapshot.data.docs
                                   .map((DocumentSnapshot document) {
                                 return InkWell(
-                                  onTap: () =>
-                                      Navigator.push(context, MaterialPageRoute(
-                                          builder: (context) =>
-                                              ShowPlayList(document.id,
-                                                  document["movies_id"]))),
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ShowPlayList(
+                                              document.id,
+                                              document["movies_id"]))),
                                   child: buildPlayList(
                                       document.id, document["movies_id"]),
                                 );

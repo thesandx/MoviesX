@@ -160,7 +160,7 @@ class MyBottomSheet {
   void addPlayList(BuildContext context, GlobalKey<FormState> _formKey) {
     showDialog(
         context: context,
-        builder: (BuildContext contex) {
+        builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Add PlayList"),
             content: buildNameFormField(_formKey),

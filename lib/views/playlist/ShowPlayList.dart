@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
@@ -45,6 +46,44 @@ class _ShowPlayListState extends State<ShowPlayList> {
             }
           },
         ),
+        actions: [
+//          IconButton(
+//            padding: EdgeInsets.only(right: kDefaultPadding/2),
+//            icon: Icon(
+//              Icons.more_vert,
+//              color: Colors.black,
+//            ),
+//            onPressed: () {
+//
+//            },
+//          ),
+          Theme(
+            data: Theme.of(context).copyWith(
+              dividerColor: Colors.white,
+              iconTheme: IconThemeData(color: Colors.black),
+            ),
+            child: PopupMenuButton<int>(
+              color: Colors.white,
+              onSelected: (item) => onSelected(context, item),
+              itemBuilder: (context) => [
+                // PopupMenuDivider(),
+                PopupMenuItem<int>(
+                  value: 0,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.delete,
+                        color: Colors.redAccent,
+                      ),
+                      const SizedBox(width: 8),
+                      Text('Delete playlist'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
         title: Text(playListName,
             style: Theme.of(context)
                 .textTheme
@@ -91,8 +130,8 @@ class _ShowPlayListState extends State<ShowPlayList> {
           if (snapshot.connectionState == ConnectionState.done) {
             return pictureCard(snapshot.data.posterPath != null
                 ? CommonData.tmdb_base_image_url +
-                    "w300" +
-                    snapshot.data.posterPath
+                "w300" +
+                snapshot.data.posterPath
                 : CommonData.image_NA);
           } else {
             return shimmerScreen();
@@ -122,5 +161,57 @@ class _ShowPlayListState extends State<ShowPlayList> {
           highlightColor: Colors.grey[350],
           child: Center(child: CircularProgressIndicator())),
     );
+  }
+
+  void onSelected(BuildContext context, int item) {
+    switch (item) {
+      case 0:
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Are you sure?"),
+
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.blueAccent),
+
+                    ),
+                    child: Text('No',
+                      style: TextStyle(
+                          color: Colors.white
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  TextButton(
+                    onPressed: () {
+                      CommonData.deletePlayList(
+                          playListName, FirebaseAuth.instance.currentUser);
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.redAccent)
+
+                    ),
+                    child: Text('Yes',
+                      style: TextStyle(
+                          color: Colors.white
+                      ),
+
+                    ),
+                  ),
+
+                ],
+              );
+            });
+    }
   }
 }
