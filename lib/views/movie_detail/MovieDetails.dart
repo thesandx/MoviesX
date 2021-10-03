@@ -11,7 +11,6 @@ import '../../constants.dart';
 
 class MovieDetails extends StatefulWidget {
   int movie_id;
-
   MovieDetails(this.movie_id);
 
   @override

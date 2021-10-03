@@ -1,7 +1,4 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -11,8 +8,8 @@ import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/Social/Profile.dart';
 import 'package:movie_app/views/Social/SocialMedia.dart';
 import 'package:movie_app/views/home/Feed.dart';
-import 'package:movie_app/views/profile/profile.dart';
 import 'package:movie_app/widgets/SearchBar.dart';
+
 import '../../constants.dart';
 
 class HomePage extends StatefulWidget {
@@ -67,7 +64,9 @@ class _HomePageState extends State<HomePage> {
     if(currentIndex==2){
       _logger.info("going to profile page");
       //return ProfileScreen();
-      return ProfilPage(url: "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=100&w=940");
+      return ProfilePage(
+          url:
+              "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=100&w=940");
     }
   }
 

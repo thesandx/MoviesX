@@ -2,21 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/Services/CommonData.dart';
-import 'package:movie_app/views/movie_detail/MovieDetails.dart';
+import 'package:movie_app/views/playlist/ShowPlayList.dart';
 import 'package:movie_app/views/profile/profile_edit.dart';
 
 import '../SplashScreen.dart';
 
-class ProfilPage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   final String url;
 
-  ProfilPage({@required this.url});
+  ProfilePage({@required this.url});
 
   @override
-  _ProfilPageState createState() => _ProfilPageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilPageState extends State<ProfilPage> {
+class _ProfilePageState extends State<ProfilePage> {
   String name = "Loading...";
   String user_name = "Loading...";
 
@@ -120,15 +120,14 @@ class _ProfilPageState extends State<ProfilPage> {
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection(
-                              '/users/${FirebaseAuth.instance.currentUser.uid}/movies')
-                          .where("liked", isEqualTo: true)
+                              '/users/${FirebaseAuth.instance.currentUser.uid}/playlist')
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
                           return buildStatColumn(
-                              '${snapshot.data.size ?? 0}', "Movies");
+                              '${snapshot.data.size ?? 0}', "PlayList");
                         } else {
-                          return buildStatColumn("...", "Movies");
+                          return buildStatColumn("...", "PlayList");
                         }
                       }),
                   StreamBuilder<QuerySnapshot>(
@@ -172,8 +171,8 @@ class _ProfilPageState extends State<ProfilPage> {
                   child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection(
-                              '/users/${FirebaseAuth.instance.currentUser.uid}/movies')
-                          .where("liked", isEqualTo: true)
+                          '/users/${FirebaseAuth.instance.currentUser
+                              .uid}/playlist')
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
@@ -188,19 +187,20 @@ class _ProfilPageState extends State<ProfilPage> {
                               children: snapshot.data.docs
                                   .map((DocumentSnapshot document) {
                                 return InkWell(
-                                  onTap: ()=> Navigator.push(context,  MaterialPageRoute(builder: (context) => MovieDetails(document.data()["movie_id"]))),
-                                  child: buildPictureCard(
-                                      CommonData.tmdb_base_image_url +
-                                              "w300" +
-                                              document.data()["poster"] ??
-                                          CommonData.image_NA),
+                                  onTap: () =>
+                                      Navigator.push(context, MaterialPageRoute(
+                                          builder: (context) =>
+                                              ShowPlayList(document.id,
+                                                  document["movies_id"]))),
+                                  child: buildPlayList(
+                                      document.id, document["movies_id"]),
                                 );
                               }).toList(),
                             );
                           } else {
                             return Center(
                               child: Text(
-                                "No liked movie",
+                                "No PlayList",
                                 style: TextStyle(
                                     fontSize: 24, fontWeight: FontWeight.bold),
                               ),
@@ -258,6 +258,21 @@ class _ProfilPageState extends State<ProfilPage> {
               image: NetworkImage(url),
             )),
       ),
+    );
+  }
+
+  Card buildPlayList(String name, List<dynamic> movieList) {
+    return Card(
+        elevation: 10,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        child: ListTile(
+          title: Text(name,
+            style: Theme
+                .of(context)
+                .textTheme
+                .headline5,
+          ),
+        )
     );
   }
 
