@@ -19,8 +19,10 @@ class MovieDetails extends StatefulWidget {
 }
 
 class _MovieDetailsState extends State<MovieDetails> {
-  final _formKey = GlobalKey<FormState>();
+  static final _formKey = GlobalKey<FormState>();
   int movie_id;
+
+  AsyncSnapshot<MovieDetailModel> _movieDetailModel;
 
   _MovieDetailsState(this.movie_id);
 
@@ -32,9 +34,12 @@ class _MovieDetailsState extends State<MovieDetails> {
           future: CommonData.getMovieDetail(movie_id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
+              _movieDetailModel = snapshot;
               return SingleChildScrollView(child: screen(snapshot));
             }
-            return Center(child: CircularProgressIndicator());
+            return _movieDetailModel == null
+                ? Center(child: CircularProgressIndicator())
+                : SingleChildScrollView(child: screen(_movieDetailModel));
           }),
     );
   }
@@ -42,13 +47,18 @@ class _MovieDetailsState extends State<MovieDetails> {
   @override
   void dispose() {
     _nameController?.dispose();
+    _movieDetailModel = null;
     super.dispose();
   }
 
   Widget screen(AsyncSnapshot<MovieDetailModel> modelSnapShot) {
     if (modelSnapShot.hasData) {
       MovieDetailModel movie = modelSnapShot.data;
-      Size size = MediaQuery.of(context).size;
+      Size size = MediaQuery
+          .of(context)
+          .size;
+
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -592,7 +602,6 @@ class _MovieDetailsState extends State<MovieDetails> {
                   //firebase call todo
                   //check duplicacy
                   if (_formKey.currentState.validate()) {
-                    //no need  - not done in youtube music
                     bool isDuplicate = await CommonData.isPlaylistAlreadyExists(
                         FirebaseAuth.instance.currentUser,
                         _nameController.text.trim());

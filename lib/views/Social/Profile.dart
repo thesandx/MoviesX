@@ -214,6 +214,7 @@ class _ProfilPageState extends State<ProfilPage> {
               )
             ],
           ),
+          //i.e log out button below
           Positioned(
             top:10,
             right: 10,

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/SplashScreen.dart';
-import 'package:movie_app/views/login/login_otp.dart';
 import 'package:movie_app/views/profile/profile_edit.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -33,8 +32,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    Size size = MediaQuery.of(context).size;
+    double width = size.width;
+    double height = size.height;
     return Stack(
       fit: StackFit.expand,
       children: [
