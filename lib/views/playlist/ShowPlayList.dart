@@ -51,8 +51,17 @@ class _ShowPlayListState extends State<ShowPlayList> {
                 .headline5
                 .copyWith(fontWeight: FontWeight.w800, color: Colors.black)),
       ),
-      body: movieGrid(),
+      body: movieList.length > 0 ? movieGrid() : noMovie(),
     );
+  }
+
+  Widget noMovie() {
+    return Center(
+        child: Text("No movie in $playListName",
+            style: Theme.of(context)
+                .textTheme
+                .headline6
+                .copyWith(fontWeight: FontWeight.w600, color: Colors.black)));
   }
 
   Widget movieGrid() {
