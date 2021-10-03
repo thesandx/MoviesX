@@ -1,17 +1,14 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/models/Show.dart';
-import 'package:movie_app/models/TrendingMovies.dart';
 import 'package:movie_app/views/movie_detail/MovieDetails.dart';
+import 'package:movie_app/widgets/MyBottomSheet.dart';
 import 'package:shimmer/shimmer.dart';
-import 'dart:math' as math;
 
 import '../../constants.dart';
 
@@ -23,10 +20,10 @@ class Feed extends StatefulWidget {
 }
 
 class _FeedState extends State<Feed> {
+  static final _formKey = GlobalKey<FormState>();
   PageController _pageController;
   int initialPage;
   CarouselController buttonCarouselController;
-  bool _enabled = true;
 
   final _logger = Logger('com.thesandx.movie_app');
 
@@ -34,16 +31,13 @@ class _FeedState extends State<Feed> {
 
   Map<String, List<Results>> movieData = new Map();
 
-  CollectionReference _reference = FirebaseFirestore.instance
-      .collection('/users/${FirebaseAuth.instance.currentUser.uid}/movies');
-
   @override
   void initState() {
     super.initState();
     initialPage = 0;
     buttonCarouselController = CarouselController();
     _pageController = PageController();
-   // CommonData.getLikedMovies(FirebaseAuth.instance.currentUser);
+    // CommonData.getLikedMovies(FirebaseAuth.instance.currentUser);
   }
 
   @override
@@ -129,7 +123,11 @@ class _FeedState extends State<Feed> {
 
   Widget smallMovieCard({Results movie}) {
     return InkWell(
-      onTap: ()=> Navigator.push(context,  MaterialPageRoute(builder: (context) => MovieDetails(movie.id))),
+      onLongPress: () =>
+          MyBottomSheet().showBottomSheet(context, _formKey, movie.id),
+      onTap: () =>
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MovieDetails(movie.id))),
       child: Container(
         width: 200,
         child: Column(
@@ -220,7 +218,6 @@ class _FeedState extends State<Feed> {
     _logger.info("movie liked $movie_id ${!isLiked}");
     await CommonData.addLikedMovie(
         FirebaseAuth.instance.currentUser, movie_id, !isLiked,poster);
-
   }
 
   Widget smallTvCard({Show movie}) {
@@ -287,7 +284,12 @@ class _FeedState extends State<Feed> {
           child: Stack(
             children: [
               InkWell(
-                onTap: ()=> Navigator.push(context,  MaterialPageRoute(builder: (context) => MovieDetails(movie.id))),
+                onLongPress: () =>
+                    MyBottomSheet().showBottomSheet(
+                        context, _formKey, movie.id),
+                onTap: () =>
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => MovieDetails(movie.id))),
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: kDefaultPadding),
                   margin: EdgeInsets.symmetric(horizontal: 8),
@@ -297,7 +299,8 @@ class _FeedState extends State<Feed> {
                     image: DecorationImage(
                       fit: BoxFit.fill,
                       image: NetworkImage(movie.posterPath != null
-                          ? CommonData.tmdb_base_image_url + "w400" + movie.posterPath
+                          ? CommonData.tmdb_base_image_url + "w400" +
+                          movie.posterPath
                           : CommonData.image_NA),
                     ),
                   ),

@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/Social/MoviePost.dart';
-import 'package:movie_app/views/Social/Profile.dart';
 import 'package:movie_app/views/movie_detail/MovieDetails.dart';
+import 'package:movie_app/widgets/MyBottomSheet.dart';
 
 class SocialMedia extends StatefulWidget {
   @override
@@ -14,19 +13,18 @@ class SocialMedia extends StatefulWidget {
 }
 
 class _SocialMediaState extends State<SocialMedia> {
-  int _selectedItemIndex = 0;
 
   final _logger = Logger('com.thesandx.movie_app');
+  static final _formKey = GlobalKey<FormState>();
 
   getFollowing() async {
     await CommonData.fetchFollwing(FirebaseAuth.instance.currentUser);
   }
 
   Future<Null> _refresh() {
-    return CommonData.fetchFollwing(FirebaseAuth.instance.currentUser).then((_user) {
-      setState(() {
-
-      });
+    return CommonData.fetchFollwing(FirebaseAuth.instance.currentUser)
+        .then((_user) {
+      setState(() {});
     });
   }
 
@@ -263,7 +261,10 @@ class _SocialMediaState extends State<SocialMedia> {
     return Stack(
       children: [
         InkWell(
-          onTap: ()=> Navigator.push(context,  MaterialPageRoute(builder: (context) => MovieDetails(movie_id))),
+          onLongPress: () =>
+              MyBottomSheet().showBottomSheet(context, _formKey, movie_id),
+          onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MovieDetails(movie_id))),
           child: Container(
             height: MediaQuery.of(context)
                 .size

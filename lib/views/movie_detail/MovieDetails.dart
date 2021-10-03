@@ -6,6 +6,7 @@ import 'package:movie_app/models/MovieCasts.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
 import 'package:movie_app/models/WatchProvider.dart';
 import 'package:movie_app/widgets/MyBackButton.dart';
+import 'package:movie_app/widgets/MyBottomSheet.dart';
 
 import '../../constants.dart';
 
@@ -194,46 +195,8 @@ class _MovieDetailsState extends State<MovieDetails> {
                   height: 64,
                   width: 64,
                   child: FlatButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (builder) {
-                            return Container(
-                              height: 400,
-                              child: Column(
-                                children: [
-                                  Container(
-                                      height: 30,
-                                      child: Text(
-                                        "PlayList",
-                                        textAlign: TextAlign.left,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5,
-                                      )),
-                                  Container(
-                                      height: 300,
-                                      child: bottomSheet(movie_id)),
-                                  Container(
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        child: Text(
-                                          "Create New PlayList ",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6,
-                                        ),
-                                        style: ButtonStyle(),
-                                        onPressed: () {
-                                          addPlayList();
-                                        },
-                                      ))
-                                ],
-                              ),
-                            );
-                          });
-                    },
+                    onPressed: () => MyBottomSheet()
+                        .showBottomSheet(context, _formKey, movie.id),
                     color: Color(0xFFFE6D8E),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),

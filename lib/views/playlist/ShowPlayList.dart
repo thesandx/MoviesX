@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
 import 'package:movie_app/views/movie_detail/MovieDetails.dart';
+import 'package:movie_app/widgets/MyBottomSheet.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../constants.dart';
@@ -20,6 +21,7 @@ class ShowPlayList extends StatefulWidget {
 class _ShowPlayListState extends State<ShowPlayList> {
   String playListName;
   List<dynamic> movieList;
+  static final _formKey = GlobalKey<FormState>();
 
   _ShowPlayListState(this.playListName, this.movieList);
 
@@ -49,22 +51,26 @@ class _ShowPlayListState extends State<ShowPlayList> {
                 .headline5
                 .copyWith(fontWeight: FontWeight.w800, color: Colors.black)),
       ),
-      body: GridView.count(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-        crossAxisCount: 2,
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
-        childAspectRatio: 5 / 6,
-        children: movieList.map((var movie_id) {
-          return InkWell(
-            onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MovieDetails(movie_id))),
-            child: buildPictureCard(movie_id),
-          );
-        }).toList(),
-      ),
+      body: movieGrid(),
+    );
+  }
+
+  Widget movieGrid() {
+    return GridView.count(
+      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+      crossAxisCount: 2,
+      crossAxisSpacing: 5,
+      mainAxisSpacing: 5,
+      childAspectRatio: 5 / 6,
+      children: movieList.map((var movie_id) {
+        return InkWell(
+          onLongPress: () =>
+              MyBottomSheet().showBottomSheet(context, _formKey, movie_id),
+          onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MovieDetails(movie_id))),
+          child: buildPictureCard(movie_id),
+        );
+      }).toList(),
     );
   }
 
@@ -105,7 +111,7 @@ class _ShowPlayListState extends State<ShowPlayList> {
       child: Shimmer.fromColors(
           baseColor: Colors.grey[200],
           highlightColor: Colors.grey[350],
-          child: pictureCard(CommonData.image_NA)),
+          child: Center(child: CircularProgressIndicator())),
     );
   }
 }
