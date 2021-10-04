@@ -182,10 +182,9 @@ class _ShowPlayListState extends State<ShowPlayList> {
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.blueAccent),
                     ),
-                    child: Text('No',
-                      style: TextStyle(
-                          color: Colors.white
-                      ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                   SizedBox(width: 10),
@@ -201,7 +200,7 @@ class _ShowPlayListState extends State<ShowPlayList> {
                             Colors.redAccent)
 
                     ),
-                    child: Text('Yes',
+                    child: Text('Delete',
                       style: TextStyle(
                           color: Colors.white
                       ),
