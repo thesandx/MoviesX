@@ -171,16 +171,16 @@ class _ShowPlayListState extends State<ShowPlayList> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text("Are you sure?"),
-
+                content: Text(
+                    "'$playListName' playlist will be permanently deleted."),
                 actions: [
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.blueAccent),
-
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.blueAccent),
                     ),
                     child: Text('No',
                       style: TextStyle(

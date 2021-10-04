@@ -44,11 +44,58 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(),
-      backgroundColor: Colors.white,
-      body: getCurrentPage(),
-      bottomNavigationBar: Container(height: 60, child: BottomNavigationBar()),
+    return WillPopScope(
+      onWillPop: () async {
+        final value = await showDialog<bool>(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text('Do you want to exit the app?'),
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                      shadowColor:
+                          MaterialStateProperty.all<Color>(Colors.blue),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    child: Text(
+                      'Exit',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                      shadowColor:
+                          MaterialStateProperty.all<Color>(Colors.redAccent),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ],
+              );
+            });
+
+        return value == true;
+      },
+      child: Scaffold(
+        appBar: buildAppBar(),
+        backgroundColor: Colors.white,
+        body: getCurrentPage(),
+        bottomNavigationBar:
+            Container(height: 60, child: BottomNavigationBar()),
+      ),
     );
   }
 
