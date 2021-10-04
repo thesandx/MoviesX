@@ -101,6 +101,7 @@ class MyBottomSheet {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextFormField(
+            maxLength: 20,
             controller: _nameController,
             onSaved: (newValue) => fullName = newValue,
             autovalidateMode: AutovalidateMode.onUserInteraction,

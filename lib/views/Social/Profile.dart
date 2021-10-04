@@ -28,6 +28,23 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  List<Color> _startList = [
+    Color(0xff608bdc),
+    Color(0xff39b971),
+    Color(0xffc31432),
+    Color(0xffFFE000),
+    Color(0xff8E2DE2),
+    Color(0xff43C6AC)
+  ];
+  List<Color> _endList = [
+    Color(0xff3152b7),
+    Color(0xff1a833d),
+    Color(0xff240b36),
+    Color(0xff799F0C),
+    Color(0xff4A00E0),
+    Color(0xff191654)
+  ];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -177,6 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
                           if (snapshot.data.docs.length > 0) {
+                            int index = 1;
                             return GridView.count(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 5, vertical: 8),
@@ -193,8 +211,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           builder: (context) => ShowPlayList(
                                               document.id,
                                               document["movies_id"]))),
-                                  child: buildPlayList(
-                                      document.id, document["movies_id"]),
+                                  child: buildPlayList(index++, document.id,
+                                      document["movies_id"]),
                                 );
                               }).toList(),
                             );
@@ -262,18 +280,46 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Card buildPlayList(String name, List<dynamic> movieList) {
-    return Card(
-        elevation: 10,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        child: ListTile(
-          title: Text(name,
-            style: Theme
-                .of(context)
-                .textTheme
-                .headline5,
-          ),
-        )
+  Widget buildPlayList(int index, String name, List<dynamic> movieList) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                _startList[index % _startList.length],
+                _endList[index % _endList.length]
+              ])),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                name,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, color: Colors.white),
+              ),
+            ),
+            Divider(
+              indent: 10,
+              endIndent: 10,
+              height: 5,
+              color: Colors.white,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "${movieList.length} movies",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
