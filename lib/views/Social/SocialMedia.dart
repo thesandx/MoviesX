@@ -90,27 +90,34 @@ class _SocialMediaState extends State<SocialMedia> {
 
                     if (snapshot.connectionState ==
                         ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return CommonData.savedSnapshot == null ? Center(
+                          child: CircularProgressIndicator()) : screen(
+                          CommonData.savedSnapshot);
                     }
                     if (snapshot.connectionState ==
                         ConnectionState.active) {
-                      return Expanded(
-                        child: ListView(
-//                          shrinkWrap: true,
-//                          physics: NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.only(top: 8),
-                          children: snapshot.data.docs
-                              .map((DocumentSnapshot document) {
-                            return buildPostSection(document);
-                          }).toList(),
-                        ),
-                      );
+                      CommonData.savedSnapshot = snapshot;
+                      return screen(snapshot);
                     }
-                    return Center(child: Text('No Posts.Either follow or share'));
+                    return Center(child: Text('No Posts available.'));
                   }),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget screen(AsyncSnapshot<QuerySnapshot> snapshot) {
+    return Expanded(
+      child: ListView(
+//                          shrinkWrap: true,
+//                          physics: NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.only(top: 8),
+        children: snapshot.data.docs
+            .map((DocumentSnapshot document) {
+          return buildPostSection(document);
+        }).toList(),
       ),
     );
   }

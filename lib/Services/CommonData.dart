@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:movie_app/models/MovieCasts.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
@@ -12,6 +13,8 @@ import 'package:movie_app/models/TrendingShows.dart';
 import 'package:movie_app/models/WatchProvider.dart';
 
 class CommonData {
+  static AsyncSnapshot<QuerySnapshot> savedSnapshot;
+  static AsyncSnapshot<QuerySnapshot> savedPlayListSnapshot;
 
   static bool isLoading = false;
 
@@ -131,7 +134,7 @@ class CommonData {
     //check if doc exists
     List<dynamic>  list = [];
     users.docs.forEach((doc) {
-     // print(doc.data());
+      // print(doc.data());
       if(doc.data()['name'].toString().toLowerCase().contains(query) || doc.data()['user_name'].toString().toLowerCase().contains(query)){
         list.add({
           'name':doc['name'],
@@ -208,23 +211,23 @@ class CommonData {
   }
 
   static Future<void> fetchFollwing(User user) async{
-    QuerySnapshot following = await FirebaseFirestore.instance.collection(
-        '/users/' + user.uid + '/following').where('liked',isEqualTo: true).get();
+    QuerySnapshot following = await FirebaseFirestore.instance
+        .collection('/users/' + user.uid + '/following')
+        .where('liked', isEqualTo: true)
+        .get();
 
     List<String> res = [];
-        following.docs.forEach((doc) {
-          res.add(doc['user_id']);
-          print("${doc['user_id']}");
+    following.docs.forEach((doc) {
+      res.add(doc['user_id']);
+      print("${doc['user_id']}");
     });
-        followingUsers.clear();
-        followingUsers.addAll(res);
-        followingUsers.add(user.uid);
-        return;
-
+    followingUsers.clear();
+    followingUsers.addAll(res);
+    followingUsers.add(user.uid);
+    return;
   }
 
   static Future<bool> addFollowing(String followerId,String followingId,bool liked) async{
-
     try {
       CollectionReference following = FirebaseFirestore.instance.collection(
           '/users/' + followerId + '/following');
@@ -410,7 +413,6 @@ class CommonData {
   }
 
 
-
   static Future<List<Show>> findTrendingShows() async {
     var url = Uri.parse(
         tmdb_base_url + 'trending/tv/day?api_key=' + tmdb_api_key);
@@ -536,7 +538,6 @@ class CommonData {
     DocumentSnapshot documentSnapshot = await posts.doc(docId).get();
 
     if (documentSnapshot.exists) {
-
       await posts.doc(docId).update({
         "likes": increase
             ? documentSnapshot.data()['likes'] + 1
@@ -580,7 +581,6 @@ class CommonData {
   }
 
   static Future<bool> createPlayList(User user,String playListName) async{
-
     CollectionReference playlist = FirebaseFirestore.instance.collection(
         '/users/' + user.uid + '/playlist');
 
@@ -608,7 +608,6 @@ class CommonData {
 
 
   static Future<bool> isPlaylistAlreadyExists(User user,String playListName) async{
-
     CollectionReference playlist = FirebaseFirestore.instance.collection(
         '/users/' + user.uid + '/playlist');
 
@@ -673,8 +672,8 @@ class CommonData {
     return true;
   }
 
-  static Future<bool> addMovieInPlayList(
-      User user, String playListName, int movie_id, bool isAdd) async {
+  static Future<bool> addMovieInPlayList(User user, String playListName,
+      int movie_id, bool isAdd) async {
     CollectionReference playListCollection = FirebaseFirestore.instance
         .collection('/users/' + user.uid + '/playlist');
     //check if movieid exists
@@ -734,7 +733,7 @@ class CommonData {
       }).then((value) async {
         print("Movie added successfully " + movie_id.toString());
         //await getLikedMovies(user);
-       // allMovies[movie_id] = liked;
+        // allMovies[movie_id] = liked;
         return true;
       }).catchError((error) {
         print("Failed to add movie: $error");
@@ -817,14 +816,12 @@ class CommonData {
       catch(error){
         print("Error:failed to add user"+error.toString() ??"");
         return false;
+      }
     }
-
-
-    }
-    else{
-    print("user already hai");
-    return true;
-    //check if
+    else {
+      print("user already hai");
+      return true;
+      //check if
     }
   }
 

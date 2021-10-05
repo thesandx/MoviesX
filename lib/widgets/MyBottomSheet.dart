@@ -67,11 +67,18 @@ class MyBottomSheet {
                               innerSetState(() {
                                 curr = !curr;
                               });
-                              await CommonData.addMovieInPlayList(
-                                  FirebaseAuth.instance.currentUser,
-                                  snapshot.data[index]["name"],
-                                  movie_id,
-                                  val);
+                              bool success =
+                                  await CommonData.addMovieInPlayList(
+                                      FirebaseAuth.instance.currentUser,
+                                      snapshot.data[index]["name"],
+                                      movie_id,
+                                      val);
+
+                              if (!success) {
+                                innerSetState(() {
+                                  curr = !curr;
+                                });
+                              }
                             },
                           ),
                         ),

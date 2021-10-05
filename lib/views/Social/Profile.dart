@@ -30,7 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   List<Color> _startList = [
     Color(0xff608bdc),
-    Color(0xff39b971),
+    Color(0xff1a833d),
     Color(0xffc31432),
     Color(0xffFFE000),
     Color(0xff8E2DE2),
@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
   ];
   List<Color> _endList = [
     Color(0xff3152b7),
-    Color(0xff1a833d),
+    Color(0xff240b36),
     Color(0xff240b36),
     Color(0xff799F0C),
     Color(0xff4A00E0),
@@ -52,6 +52,10 @@ class _ProfilePageState extends State<ProfilePage> {
     fetchProfileData();
   }
 
+  int playList;
+  int followers;
+  int following;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Container(
                 margin: EdgeInsets.only(top: 15),
-                  height: 80,
+                height: 80,
                   width: 80,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(40),
@@ -141,10 +145,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
+                          playList = snapshot.data.size ?? 0;
                           return buildStatColumn(
                               '${snapshot.data.size ?? 0}', "PlayList");
                         } else {
-                          return buildStatColumn("...", "PlayList");
+                          return buildStatColumn(
+                              playList.toString(), "PlayList");
                         }
                       }),
                   StreamBuilder<QuerySnapshot>(
@@ -155,10 +161,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
+                          followers = snapshot.data.size ?? 0;
                           return buildStatColumn(
                               '${snapshot.data.size ?? 0}', "Followers");
                         } else {
-                          return buildStatColumn("...", "Followers");
+                          return buildStatColumn(
+                              followers.toString(), "Followers");
                         }
                       }),
                   StreamBuilder<QuerySnapshot>(
@@ -169,10 +177,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
+                          following = snapshot.data.size ?? 0;
                           return buildStatColumn(
                               '${snapshot.data.size ?? 0}', "Following");
                         } else {
-                          return buildStatColumn("...", "Following");
+                          return buildStatColumn(
+                              following.toString(), "Following");
                         }
                       }),
                 ],
@@ -193,29 +203,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
+                          CommonData.savedPlayListSnapshot = snapshot;
                           if (snapshot.data.docs.length > 0) {
-                            int index = 1;
-                            return GridView.count(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 8),
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5,
-                              childAspectRatio: 6 / 5,
-                              children: snapshot.data.docs
-                                  .map((DocumentSnapshot document) {
-                                return InkWell(
-                                  onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ShowPlayList(
-                                              document.id,
-                                              document["movies_id"]))),
-                                  child: buildPlayList(index++, document.id,
-                                      document["movies_id"]),
-                                );
-                              }).toList(),
-                            );
+                            return playListScreen(snapshot);
                           } else {
                             return Center(
                               child: Text(
@@ -226,7 +216,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             );
                           }
                         } else {
-                          return Center(child: CircularProgressIndicator());
+                          return CommonData.savedPlayListSnapshot == null
+                              ? Center(child: CircularProgressIndicator())
+                              : playListScreen(
+                              CommonData.savedPlayListSnapshot);
                         }
                       }),
                 ),
@@ -262,6 +255,33 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget playListScreen(AsyncSnapshot<QuerySnapshot> snapshot) {
+    int index = 1;
+    return GridView.count(
+      padding: EdgeInsets.symmetric(
+          horizontal: 5, vertical: 8),
+      crossAxisCount: 2,
+      crossAxisSpacing: 5,
+      mainAxisSpacing: 5,
+      childAspectRatio: 6 / 5,
+      children: snapshot.data.docs
+          .map((DocumentSnapshot document) {
+        return InkWell(
+          onTap: () =>
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ShowPlayList(
+                              document.id,
+                              document["movies_id"]))),
+          child: buildPlayList(index++, document.id,
+              document["movies_id"]),
+        );
+      }).toList(),
     );
   }
 
