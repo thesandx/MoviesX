@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/Social/MoviePost.dart';
-import 'package:movie_app/views/Social/Profile.dart';
+import 'package:movie_app/views/movie_detail/MovieDetails.dart';
+import 'package:movie_app/widgets/MyBottomSheet.dart';
 
 class SocialMedia extends StatefulWidget {
   @override
@@ -12,17 +13,18 @@ class SocialMedia extends StatefulWidget {
 }
 
 class _SocialMediaState extends State<SocialMedia> {
-  int _selectedItemIndex = 0;
+
+  final _logger = Logger('com.thesandx.movie_app');
+  static final _formKey = GlobalKey<FormState>();
 
   getFollowing() async {
     await CommonData.fetchFollwing(FirebaseAuth.instance.currentUser);
   }
 
   Future<Null> _refresh() {
-    return CommonData.fetchFollwing(FirebaseAuth.instance.currentUser).then((_user) {
-      setState(() {
-
-      });
+    return CommonData.fetchFollwing(FirebaseAuth.instance.currentUser)
+        .then((_user) {
+      setState(() {});
     });
   }
 
@@ -88,27 +90,34 @@ class _SocialMediaState extends State<SocialMedia> {
 
                     if (snapshot.connectionState ==
                         ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return CommonData.savedSnapshot == null ? Center(
+                          child: CircularProgressIndicator()) : screen(
+                          CommonData.savedSnapshot);
                     }
                     if (snapshot.connectionState ==
                         ConnectionState.active) {
-                      return Expanded(
-                        child: ListView(
-//                          shrinkWrap: true,
-//                          physics: NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.only(top: 8),
-                          children: snapshot.data.docs
-                              .map((DocumentSnapshot document) {
-                            return buildPostSection(document);
-                          }).toList(),
-                        ),
-                      );
+                      CommonData.savedSnapshot = snapshot;
+                      return screen(snapshot);
                     }
-                    return Center(child: Text('No Posts.Either follow or share'));
+                    return Center(child: Text('No Posts available.'));
                   }),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget screen(AsyncSnapshot<QuerySnapshot> snapshot) {
+    return Expanded(
+      child: ListView(
+//                          shrinkWrap: true,
+//                          physics: NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.only(top: 8),
+        children: snapshot.data.docs
+            .map((DocumentSnapshot document) {
+          return buildPostSection(document);
+        }).toList(),
       ),
     );
   }
@@ -149,17 +158,18 @@ class _SocialMediaState extends State<SocialMedia> {
                       document.data()["posterPath"] ??
                   CommonData.image_NA,
               document.data()['movie_id'],
-              document.id,document.data()["posterPath"]),
-          SizedBox(
-            height: 5,
-          ),
-          Text(
-            "${document.data()['likes'] ?? 0} likes",
-            style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800]),
-          ),
+              document.id,
+              document.data()["posterPath"]),
+//          SizedBox(
+//            height: 5,
+//          ),
+//          Text(
+//            "${document.data()['likes'] ?? 0} likes",
+//            style: TextStyle(
+//                fontSize: 17,
+//                fontWeight: FontWeight.bold,
+//                color: Colors.grey[800]),
+//          ),
           SizedBox(
             height: 8,
           ),
@@ -179,7 +189,7 @@ class _SocialMediaState extends State<SocialMedia> {
               onTap: () {
 //                Navigator.of(context).push(MaterialPageRoute(
 //                    builder: (BuildContext context) =>
-//                        ProfilPage(url: urlProfilePhoto)));
+//                        ProfilePage(url: urlProfilePhoto)));
               },
               child: CircleAvatar(
                 radius: 12,
@@ -258,68 +268,31 @@ class _SocialMediaState extends State<SocialMedia> {
   Stack buildPostPicture(String urlPost, int movie_id, String docId,String poster) {
     return Stack(
       children: [
-        Container(
-          height: MediaQuery.of(context)
-              .size
-              .width, //-70 height me width liya hai intresting,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 20,
-                  offset: Offset(0, 10),
-                ),
-              ],
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: NetworkImage(urlPost),
-              )),
+        InkWell(
+          onLongPress: () =>
+              MyBottomSheet().showBottomSheet(context, _formKey, movie_id),
+          onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MovieDetails(movie_id))),
+          child: Container(
+            height: MediaQuery.of(context)
+                .size
+                .width, //-70 height me width liya hai intresting,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    spreadRadius: 2,
+                    blurRadius: 20,
+                    offset: Offset(0, 10),
+                  ),
+                ],
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: NetworkImage(urlPost),
+                )),
+          ),
         ),
-        Positioned(
-          bottom: 20,
-          right: 20,
-          child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection(
-                      '/users/${FirebaseAuth.instance.currentUser.uid}/movies')
-                  .where("movie_id", isEqualTo: movie_id)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  print("error aaya hai ${movie_id}");
-                }
-                if (snapshot.connectionState == ConnectionState.active) {
-                  //print(snapshot.data.toString() + " ${movie.id}");
-                  bool val = snapshot.data.docs.length > 0
-                      ? snapshot.data.docs[0]['liked'] ?? false
-                      : false;
-                  return InkWell(
-                    child: Icon(Icons.favorite,
-                        size: 35,
-                        color: val
-                            ? Colors.red.withOpacity(1.0)
-                            : Colors.white.withOpacity(0.7)),
-                    onTap: () {
-                      //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
-                      addMovie(movie_id, val ?? false, docId,poster);
-                    },
-                  );
-                } else if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else {
-                  return InkWell(
-                    child: Icon(Icons.favorite,
-                        size: 35, color: Colors.white.withOpacity(0.7)),
-                    onTap: () {
-                      addMovie(movie_id, false, docId,poster);
-                    },
-                  );
-                }
-              }),
-        )
       ],
     );
   }
@@ -340,6 +313,7 @@ class _SocialMediaState extends State<SocialMedia> {
   }
 
   void addMovie(int movie_id, bool isLiked, String docId,String poster) async {
+    _logger.info("movie liked $movie_id ${!isLiked}");
     await CommonData.addLikedMovie(
         FirebaseAuth.instance.currentUser, movie_id, !isLiked,poster);
     await CommonData.increaseLikesCount(docId, !isLiked);

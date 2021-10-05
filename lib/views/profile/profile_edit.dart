@@ -1,15 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:movie_app/Services/CommonData.dart';
-import 'package:movie_app/views/home/HomePage.dart';
-import 'package:movie_app/widgets/button.dart';
-import '../../constants.dart';
-import '../../size_config.dart';
-import 'profile_form.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:movie_app/Services/CommonData.dart';
+
+import '../../constants.dart';
+import 'profile_form.dart';
 
 
 class CompleteProfile extends StatefulWidget {
@@ -38,9 +33,9 @@ class _CompleteProfileState extends State<CompleteProfile> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    Size size = MediaQuery.of(context).size;
+//    double width = MediaQuery.of(context).size.width;
+//    double height = MediaQuery.of(context).size.height;
+//    Size size = MediaQuery.of(context).size;
     AppBar buildAppBar() {
       return AppBar(
         centerTitle: true,
@@ -67,7 +62,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
     }
     return Scaffold(
       appBar: buildAppBar(),
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
           body: ModalProgressHUD(
             inAsyncCall: CommonData.isLoading,

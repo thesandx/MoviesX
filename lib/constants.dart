@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // Colos that use in our app
 const kSecondaryColor = Color(0xFFFE6D8E);
 const kTextColor = Color(0xFF12153D);
-const kTextLightColor = Color(0xfff3f5f7);
+const kTextLightColor = Colors.black38;
 const kFillStarColor = Color(0xFFFCC419);
 
 const kDefaultPadding = 20.0;

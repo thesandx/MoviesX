@@ -1,9 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
-import 'package:movie_app/views/home/HomePage.dart';
 import 'package:movie_app/views/login/otp_verify.dart';
 import 'package:movie_app/widgets/button.dart';
 
@@ -30,7 +27,7 @@ class _LoginOtpState extends State<LoginOtp> {
     return Scaffold(
         key: scaffoldKey,
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white,
+        //backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
             children: [

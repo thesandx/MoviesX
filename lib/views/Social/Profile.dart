@@ -2,20 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_app/Services/CommonData.dart';
+import 'package:movie_app/views/playlist/ShowPlayList.dart';
 import 'package:movie_app/views/profile/profile_edit.dart';
 
 import '../SplashScreen.dart';
 
-class ProfilPage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   final String url;
 
-  ProfilPage({@required this.url});
+  ProfilePage({@required this.url});
 
   @override
-  _ProfilPageState createState() => _ProfilPageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilPageState extends State<ProfilPage> {
+class _ProfilePageState extends State<ProfilePage> {
   String name = "Loading...";
   String user_name = "Loading...";
 
@@ -27,12 +28,33 @@ class _ProfilPageState extends State<ProfilPage> {
     });
   }
 
+  List<Color> _startList = [
+    Color(0xff608bdc),
+    Color(0xff1a833d),
+    Color(0xffc31432),
+    Color(0xffFFE000),
+    Color(0xff8E2DE2),
+    Color(0xff43C6AC)
+  ];
+  List<Color> _endList = [
+    Color(0xff3152b7),
+    Color(0xff240b36),
+    Color(0xff240b36),
+    Color(0xff799F0C),
+    Color(0xff4A00E0),
+    Color(0xff191654)
+  ];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fetchProfileData();
   }
+
+  int playList;
+  int followers;
+  int following;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +65,7 @@ class _ProfilPageState extends State<ProfilPage> {
             children: [
               Container(
                 margin: EdgeInsets.only(top: 15),
-                  height: 80,
+                height: 80,
                   width: 80,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(40),
@@ -119,15 +141,16 @@ class _ProfilPageState extends State<ProfilPage> {
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection(
-                              '/users/${FirebaseAuth.instance.currentUser.uid}/movies')
-                          .where("liked", isEqualTo: true)
+                              '/users/${FirebaseAuth.instance.currentUser.uid}/playlist')
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
+                          playList = snapshot.data.size ?? 0;
                           return buildStatColumn(
-                              '${snapshot.data.size ?? 0}', "Movies");
+                              '${snapshot.data.size ?? 0}', "PlayList");
                         } else {
-                          return buildStatColumn("...", "Movies");
+                          return buildStatColumn(
+                              playList.toString(), "PlayList");
                         }
                       }),
                   StreamBuilder<QuerySnapshot>(
@@ -138,10 +161,12 @@ class _ProfilPageState extends State<ProfilPage> {
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
+                          followers = snapshot.data.size ?? 0;
                           return buildStatColumn(
                               '${snapshot.data.size ?? 0}', "Followers");
                         } else {
-                          return buildStatColumn("...", "Followers");
+                          return buildStatColumn(
+                              followers.toString(), "Followers");
                         }
                       }),
                   StreamBuilder<QuerySnapshot>(
@@ -152,10 +177,12 @@ class _ProfilPageState extends State<ProfilPage> {
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
+                          following = snapshot.data.size ?? 0;
                           return buildStatColumn(
                               '${snapshot.data.size ?? 0}', "Following");
                         } else {
-                          return buildStatColumn("...", "Following");
+                          return buildStatColumn(
+                              following.toString(), "Following");
                         }
                       }),
                 ],
@@ -171,45 +198,35 @@ class _ProfilPageState extends State<ProfilPage> {
                   child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection(
-                              '/users/${FirebaseAuth.instance.currentUser.uid}/movies')
-                          .where("liked", isEqualTo: true)
+                          '/users/${FirebaseAuth.instance.currentUser
+                              .uid}/playlist')
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
+                          CommonData.savedPlayListSnapshot = snapshot;
                           if (snapshot.data.docs.length > 0) {
-                            return GridView.count(
-                              padding:
-                                  EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5,
-                              childAspectRatio: 5 / 6,
-                              children: snapshot.data.docs
-                                  .map((DocumentSnapshot document) {
-                                return buildPictureCard(
-                                    CommonData.tmdb_base_image_url +
-                                            "w300" +
-                                            document.data()["poster"] ??
-                                        CommonData.image_NA);
-                              }).toList(),
-                            );
+                            return playListScreen(snapshot);
                           } else {
                             return Center(
                               child: Text(
-                                "No liked movie",
+                                "No PlayList",
                                 style: TextStyle(
                                     fontSize: 24, fontWeight: FontWeight.bold),
                               ),
                             );
                           }
                         } else {
-                          return Center(child: CircularProgressIndicator());
+                          return CommonData.savedPlayListSnapshot == null
+                              ? Center(child: CircularProgressIndicator())
+                              : playListScreen(
+                              CommonData.savedPlayListSnapshot);
                         }
                       }),
                 ),
               )
             ],
           ),
+          //i.e log out button below
           Positioned(
             top:10,
             right: 10,
@@ -241,6 +258,33 @@ class _ProfilPageState extends State<ProfilPage> {
     );
   }
 
+  Widget playListScreen(AsyncSnapshot<QuerySnapshot> snapshot) {
+    int index = 1;
+    return GridView.count(
+      padding: EdgeInsets.symmetric(
+          horizontal: 5, vertical: 8),
+      crossAxisCount: 2,
+      crossAxisSpacing: 5,
+      mainAxisSpacing: 5,
+      childAspectRatio: 6 / 5,
+      children: snapshot.data.docs
+          .map((DocumentSnapshot document) {
+        return InkWell(
+          onTap: () =>
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ShowPlayList(
+                              document.id,
+                              document["movies_id"]))),
+          child: buildPlayList(index++, document.id,
+              document["movies_id"]),
+        );
+      }).toList(),
+    );
+  }
+
   Card buildPictureCard(String url) {
     return Card(
       elevation: 10,
@@ -252,6 +296,49 @@ class _ProfilPageState extends State<ProfilPage> {
               fit: BoxFit.fill,
               image: NetworkImage(url),
             )),
+      ),
+    );
+  }
+
+  Widget buildPlayList(int index, String name, List<dynamic> movieList) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                _startList[index % _startList.length],
+                _endList[index % _endList.length]
+              ])),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                name,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, color: Colors.white),
+              ),
+            ),
+            Divider(
+              indent: 10,
+              endIndent: 10,
+              height: 5,
+              color: Colors.white,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "${movieList.length} movies",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
