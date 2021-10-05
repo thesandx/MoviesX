@@ -29,7 +29,7 @@ class _MovieDetailsState extends State<MovieDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+     // backgroundColor: Colors.white,
       body: FutureBuilder<MovieDetailModel>(
           future: CommonData.getMovieDetail(movie_id),
           builder: (context, snapshot) {

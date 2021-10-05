@@ -1,15 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/profile/profile_edit.dart';
 import 'package:movie_app/widgets/button.dart';
 import 'package:pin_entry_text_field/pin_entry_text_field.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import '../home/HomePage.dart';
 
@@ -116,7 +115,7 @@ class _OtpVerficationState extends State<OtpVerfication> {
     return Scaffold(
       key: scaffoldKey,
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       body: ModalProgressHUD(
         inAsyncCall: _isLoading,
         opacity: 0.1,

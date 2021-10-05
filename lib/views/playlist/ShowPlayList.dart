@@ -29,7 +29,7 @@ class _ShowPlayListState extends State<ShowPlayList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+     // backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Color(0xfff3f5f7),

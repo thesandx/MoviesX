@@ -189,7 +189,7 @@ class _SocialMediaState extends State<SocialMedia> {
               onTap: () {
 //                Navigator.of(context).push(MaterialPageRoute(
 //                    builder: (BuildContext context) =>
-//                        ProfilPage(url: urlProfilePhoto)));
+//                        ProfilePage(url: urlProfilePhoto)));
               },
               child: CircleAvatar(
                 radius: 12,
@@ -293,49 +293,6 @@ class _SocialMediaState extends State<SocialMedia> {
                 )),
           ),
         ),
-//        Positioned(
-//          bottom: 20,
-//          right: 20,
-//          child: StreamBuilder<QuerySnapshot>(
-//              stream: FirebaseFirestore.instance
-//                  .collection(
-//                      '/users/${FirebaseAuth.instance.currentUser.uid}/movies')
-//                  .where("movie_id", isEqualTo: movie_id)
-//                  .snapshots(),
-//              builder: (context, snapshot) {
-//                if (snapshot.hasError) {
-//                  print("error aaya hai ${movie_id}");
-//                }
-//                if (snapshot.connectionState == ConnectionState.active) {
-//                  //print(snapshot.data.toString() + " ${movie.id}");
-//                  bool val = snapshot.data.docs.length > 0
-//                      ? snapshot.data.docs[0]['liked'] ?? false
-//                      : false;
-//                  return InkWell(
-//                    child: Icon(Icons.favorite,
-//                        size: 35,
-//                        color: val
-//                            ? Colors.red.withOpacity(1.0)
-//                            : Colors.white.withOpacity(0.7)),
-//                    onTap: () {
-//                      //print("Movie id ${movie.id} ,abhi hai  - ${CommonData.likedMovies[movie.id]} ,krenge - ${movie.id} ${CommonData.likedMovies[movie.id]?? false}");
-//                      addMovie(movie_id, val ?? false, docId,poster);
-//                    },
-//                  );
-//                } else if (snapshot.connectionState ==
-//                    ConnectionState.waiting) {
-//                  return Center(child: CircularProgressIndicator());
-//                } else {
-//                  return InkWell(
-//                    child: Icon(Icons.favorite,
-//                        size: 35, color: Colors.white.withOpacity(0.7)),
-//                    onTap: () {
-//                      addMovie(movie_id, false, docId,poster);
-//                    },
-//                  );
-//                }
-//              }),
-//        )
       ],
     );
   }

@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
       },
       child: Scaffold(
         appBar: buildAppBar(),
-        backgroundColor: Colors.white,
+        //backgroundColor: Colors.white,
         body: getCurrentPage(),
         bottomNavigationBar:
             Container(height: 60, child: BottomNavigationBar()),
