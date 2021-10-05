@@ -6,6 +6,9 @@ name: DOCKER IMAGE CI
 on:
   push:
     branches: master
+  pull_request_review:
+    types:
+      - submitted
 
 jobs:
   docker:
