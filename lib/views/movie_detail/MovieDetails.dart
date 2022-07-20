@@ -194,12 +194,11 @@ class _MovieDetailsState extends State<MovieDetails> {
                 SizedBox(
                   height: 64,
                   width: 64,
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: () => MyBottomSheet()
                         .showBottomSheet(context, _formKey, movie.id),
-                    color: Color(0xFFFE6D8E),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
+                    style: TextButton.styleFrom(
+                              primary: Colors.blue),
                     child: Icon(
                       Icons.add,
                       size: 28,

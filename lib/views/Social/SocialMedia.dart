@@ -122,7 +122,7 @@ class _SocialMediaState extends State<SocialMedia> {
     );
   }
 
-  Container buildPostSection(DocumentSnapshot document) {
+  Container buildPostSection(DocumentSnapshot<Map<String, dynamic>> document) {
     return Container(
       margin: EdgeInsets.only(bottom: 8), //separtion b/w list items
       padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
@@ -178,7 +178,7 @@ class _SocialMediaState extends State<SocialMedia> {
     );
   }
 
-  Row buildPostFirstRow(String urlProfilePhoto, DocumentSnapshot document) {
+  Row buildPostFirstRow(String urlProfilePhoto, DocumentSnapshot<Map<String, dynamic>> document) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -200,7 +200,7 @@ class _SocialMediaState extends State<SocialMedia> {
             SizedBox(
               width: 5,
             ),
-            StreamBuilder<DocumentSnapshot>(
+            StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
                     .doc(document.data()['user_id'])

@@ -130,7 +130,7 @@ class CommonData {
       return [];
     }
 
-    QuerySnapshot users = await FirebaseFirestore.instance.collection('users').get();
+    QuerySnapshot<Map<String, dynamic>> users  = await FirebaseFirestore.instance.collection('users').get();
     //check if doc exists
     List<dynamic>  list = [];
     users.docs.forEach((doc) {
@@ -211,7 +211,7 @@ class CommonData {
   }
 
   static Future<void> fetchFollwing(User user) async{
-    QuerySnapshot following = await FirebaseFirestore.instance
+    QuerySnapshot<Map<String, dynamic>> following = await FirebaseFirestore.instance
         .collection('/users/' + user.uid + '/following')
         .where('liked', isEqualTo: true)
         .get();
@@ -433,7 +433,7 @@ class CommonData {
   static Future<bool> retriveAPIKey() async {
     CollectionReference tmdb = FirebaseFirestore.instance.collection('TMDB');
 
-    DocumentSnapshot documentSnapshot = await tmdb.doc("tmdb_api_key").get();
+    DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await tmdb.doc("tmdb_api_key").get();
     if (documentSnapshot.exists) {
       print("api_key mil gya");
       //print(documentSnapshot.data());
@@ -462,7 +462,7 @@ class CommonData {
   }
 
   static Future<bool> isUsernameAvailable(String username) async {
-    final QuerySnapshot result = await FirebaseFirestore.instance
+    final QuerySnapshot<Map<String, dynamic>> result = await FirebaseFirestore.instance
         .collection('users')
         .where('user_name', isEqualTo: username)
         .limit(1)
@@ -474,7 +474,7 @@ class CommonData {
 
   static Future<void> getLikedMovies(User user) async {
     likedMovies.clear();
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
         .collection('/users/' + user.uid + '/movies')
         .get();
 
@@ -535,7 +535,7 @@ class CommonData {
   static Future<bool> increaseLikesCount(String docId,bool increase) async{
     CollectionReference posts = await FirebaseFirestore.instance.collection(
         'posts');
-    DocumentSnapshot documentSnapshot = await posts.doc(docId).get();
+    DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await posts.doc(docId).get();
 
     if (documentSnapshot.exists) {
       await posts.doc(docId).update({
@@ -559,7 +559,7 @@ class CommonData {
     CollectionReference playlist = FirebaseFirestore.instance
         .collection('/users/' + user.uid + '/playlist');
     //i.e get list of documents
-    QuerySnapshot querySnapshot = await playlist.orderBy("name").get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await playlist.orderBy("name").get();
 
     querySnapshot.docs.forEach((doc) {
       var map = {};
@@ -584,7 +584,7 @@ class CommonData {
     CollectionReference playlist = FirebaseFirestore.instance.collection(
         '/users/' + user.uid + '/playlist');
 
-    DocumentSnapshot documentSnapshot = await playlist.doc(playListName)
+    DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await playlist.doc(playListName)
         .get();
 
     if (documentSnapshot.exists) {
@@ -611,7 +611,7 @@ class CommonData {
     CollectionReference playlist = FirebaseFirestore.instance.collection(
         '/users/' + user.uid + '/playlist');
 
-    DocumentSnapshot documentSnapshot = await playlist.doc(playListName)
+    DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await playlist.doc(playListName)
         .get();
 
     if (documentSnapshot.exists) {
@@ -627,8 +627,8 @@ class CommonData {
         .collection('/users/' + user.uid + '/playlist');
 
     //check if watch later exists
-    DocumentSnapshot watchLaterDoc = await playlist.doc("watch later").get();
-    DocumentSnapshot watchedDoc = await playlist.doc("watched").get();
+    DocumentSnapshot<Map<String,dynamic>> watchLaterDoc = await playlist.doc("watch later").get();
+    DocumentSnapshot<Map<String,dynamic>> watchedDoc = await playlist.doc("watched").get();
 
     if (watchLaterDoc.exists) {
       //check if this movie is here or not
@@ -677,7 +677,7 @@ class CommonData {
     CollectionReference playListCollection = FirebaseFirestore.instance
         .collection('/users/' + user.uid + '/playlist');
     //check if movieid exists
-    DocumentSnapshot documentSnapshot = await playListCollection
+    DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await playListCollection
         .doc(playListName)
         .get(); //or we can use collection with where
     if (documentSnapshot.exists) {
@@ -721,7 +721,7 @@ class CommonData {
     CollectionReference movies = FirebaseFirestore.instance.collection(
         '/users/' + user.uid + '/movies');
     //check if movieid exists
-    DocumentSnapshot documentSnapshot = await movies.doc(movie_id.toString())
+    DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await movies.doc(movie_id.toString())
         .get(); //or we can use collection with where
     if (documentSnapshot.exists) {
       print(documentSnapshot.data());
@@ -762,7 +762,7 @@ class CommonData {
   static Future<bool> checkIfUserDetailExists(User user) async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     //check if doc exists
-    DocumentSnapshot documentSnapshot = await users.doc(user.uid).get();
+    DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await users.doc(user.uid).get();
     if (documentSnapshot.exists) {
       print(documentSnapshot.data());
       if (documentSnapshot.data()['user_name'] == null ||
@@ -785,7 +785,7 @@ class CommonData {
   static Future<bool> checkIfUserExists(User user) async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     //check if doc exists
-    DocumentSnapshot documentSnapshot = await users.doc(user.uid).get();
+    DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await users.doc(user.uid).get();
     if (documentSnapshot.exists) {
       print("user exists");
       return true;
@@ -800,7 +800,7 @@ class CommonData {
   static Future<bool> createUser(User user) async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     //check if user exists
-    DocumentSnapshot documentSnapshot = await users.doc(user.uid).get();
+    DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await users.doc(user.uid).get();
     if (!documentSnapshot.exists) {
       //if not then add the doc
 
