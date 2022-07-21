@@ -5,6 +5,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
+import 'package:movie_app/views/Contacts/Contacts.dart';
 import 'package:movie_app/views/Social/Profile.dart';
 import 'package:movie_app/views/Social/SocialMedia.dart';
 import 'package:movie_app/views/home/Feed.dart';
@@ -102,19 +103,22 @@ class _HomePageState extends State<HomePage> {
   Widget getCurrentPage() {
     if (currentIndex == 1) {
       _logger.info("going to trending page");
-      return Feed();
+
+      return ProfilePage(
+          url:
+          "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=100&w=940");
+
     }
     if(currentIndex==0){
       _logger.info("going to feed page");
-      return SocialMedia();
+
+      return Feed();
     }
     if(currentIndex==2){
       _logger.info("going to profile page");
       //return ProfileScreen();
-      return ProfilePage(
-          url:
-              "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=100&w=940");
-    }
+      return Contacts();
+       }
   }
 
   Widget BottomNavigationBar() {
@@ -135,18 +139,7 @@ class _HomePageState extends State<HomePage> {
       hasNotch: false, //border radius doesn't work when the notch is enabled.
       onTap: changePage,
       items: [
-        BubbleBottomBarItem(
-          backgroundColor: Colors.grey,
-          icon: Icon(
-            Icons.dashboard_outlined,
-            color: iconColor,
-          ),
-          activeIcon: Icon(
-            Icons.dashboard_rounded,
-            color: iconActiveColor,
-          ),
-          title: Text('Feed', style: style),
-        ),
+
         BubbleBottomBarItem(
           backgroundColor: Colors.grey,
           icon: Icon(
@@ -162,6 +155,18 @@ class _HomePageState extends State<HomePage> {
         BubbleBottomBarItem(
           backgroundColor: Colors.grey,
           icon: Icon(
+            Icons.dashboard_outlined,
+            color: iconColor,
+          ),
+          activeIcon: Icon(
+            Icons.dashboard_rounded,
+            color: iconActiveColor,
+          ),
+          title: Text('Playlist', style: style),
+        ),
+        BubbleBottomBarItem(
+          backgroundColor: Colors.grey,
+          icon: Icon(
             Icons.account_circle_outlined,
             color: iconColor,
           ),
@@ -169,7 +174,7 @@ class _HomePageState extends State<HomePage> {
             Icons.account_circle_rounded,
             color: iconActiveColor,
           ),
-          title: Text('Profile', style: style),
+          title: Text('Contacts', style: style),
         ),
       ],
     );
