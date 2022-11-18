@@ -123,6 +123,26 @@ class CommonData {
 //    return map;
 //  }
 
+  static Future<List<dynamic>> getAllUsers() async {
+    QuerySnapshot<Map<String, dynamic>> users = await FirebaseFirestore.instance
+        .collection('users').get();
+    //check if doc exists
+    List<dynamic> list = [];
+    print("size is ${users.docs.length}");
+    users.docs.forEach((doc) {
+      // print(doc.data());
+      if(doc['mobile']!=null) {
+        list.add({
+          // 'name': doc['name'],
+          // 'user_name': doc['user_name'],
+          // 'user_id': doc.id,
+          'mobile': doc['mobile'],
+        });
+      }
+    });
+    return list;
+  }
+
 
   static Future<List<dynamic>> searchUsers(User user,String query) async{
     query = query.substring(1).toLowerCase();

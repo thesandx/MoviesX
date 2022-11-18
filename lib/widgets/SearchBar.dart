@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:movie_app/views/movie_detail/MovieDetails.dart';
@@ -9,7 +8,6 @@ import 'package:movie_app/views/movie_detail/MovieDetails.dart';
 import '../constants.dart';
 
 class MovieSearch extends SearchDelegate{
-  final _logger = Logger('com.thesandx.movie_app');
   @override
   List<Widget> buildActions(BuildContext context) {
     // TODO: implement buildActions
@@ -318,7 +316,6 @@ class MovieSearch extends SearchDelegate{
   }
 
   void addMovie(int movie_id, bool isLiked,String poster) async {
-    _logger.info("movie liked $movie_id ${!isLiked}");
     await CommonData.addLikedMovie(
         FirebaseAuth.instance.currentUser, movie_id, !isLiked,poster);
 

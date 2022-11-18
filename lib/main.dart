@@ -1,8 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:logging/logging.dart';
-import 'package:logging_appenders/logging_appenders.dart';
 import 'package:movie_app/firebase_options.dart';
 import 'package:movie_app/views/SplashScreen.dart';
 import 'package:movie_app/views/home/HomePage.dart';
@@ -10,18 +8,6 @@ import 'package:movie_app/views/login/login_otp.dart';
 import 'package:flutter/services.dart';
 
 
-createLogger() {
-  Logger.root.level = Level.ALL;
-
-  LogzIoApiAppender(
-    apiToken: "ObLFoumDvIXWrKrQIHUIUAtjcqryiCxU",
-    url: "https://listener.logz.io:8071/",
-    labels: {
-      "version": "1.0.0", // dynamically later on
-      "build": "2" // dynamically later on
-    },
-  )..attachToLogger(Logger.root);
-}
 
 
 void main() async {
@@ -29,7 +15,6 @@ void main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  createLogger();
   runApp(MyApp());
 }
 

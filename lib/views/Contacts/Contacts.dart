@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../Services/CommonData.dart';
+
 class Contacts extends StatefulWidget {
   // const Contacts({Key? key}) : super(key: key);
 
@@ -20,7 +22,7 @@ class _ContactsState extends State<Contacts> {
   @override
   void initState() {
     super.initState();
-    _fetchContacts();
+   // _fetchContacts();
     _listenForPermissionStatus();
   }
 
@@ -28,12 +30,36 @@ class _ContactsState extends State<Contacts> {
     final status = await _permission.status;
     setState(() => _permissionStatus = status);
   }
-  Future _fetchContacts() async {
+  Future<List<Contact>> _fetchContacts() async {
     if (!await FlutterContacts.requestPermission(readonly: true)) {
       setState(() => _permissionDenied = true);
     } else {
-      final contacts = await FlutterContacts.getContacts();
-      setState(() => _contacts = contacts);
+      final contacts = await FlutterContacts.getContacts(withProperties: true);
+
+      List<dynamic> allusers = await CommonData.getAllUsers();
+
+      List<Contact> filteredContacts = [];
+      for (var contact in contacts) {
+        for (var phone in contact.phones) {
+          for (var user in allusers) {
+          print("user phone number is ${user['mobile']}");
+          var mobile = phone.number.replaceAll(' ', '');
+          mobile = mobile.startsWith("+91")?mobile.replaceAll("+91",""):mobile;
+          user['mobile'] = user['mobile'].startsWith("+91")?user['mobile'].replaceAll("+91",""):user['mobile'];
+          print("current phone number is ${mobile}");
+            if (user['mobile'] == mobile) {
+              filteredContacts.add(contact);
+            }
+          }
+        }
+      }
+
+      //fetch contacts from firebase
+      //compare with contacts
+
+
+  return filteredContacts;
+      //setState(() => _contacts = filteredContacts);
     }
   }
 
@@ -65,7 +91,33 @@ class _ContactsState extends State<Contacts> {
           TextButton(onPressed: requestPermission, child: Text('Try again')),
         ],
       ));
-      if (_contacts == null) return Center(child: CircularProgressIndicator());
+      // if (_contacts == null) return Center(child: CircularProgressIndicator());
+      return FutureBuilder<List<Contact>>(
+        future: _fetchContacts(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, i) => Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                    color:Colors.grey[100],
+                    child: ListTile(
+                      title: Text(snapshot.data[i].displayName),
+                      //subtitle: Text(_contacts[i].phones[0].number)
+                    ),
+                  ),
+                ));
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      );
       return ListView.builder(
           itemCount: _contacts.length,
           itemBuilder: (context, i) => Padding(

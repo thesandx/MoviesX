@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:movie_app/Services/CommonData.dart';
@@ -29,7 +28,6 @@ class _OtpVerficationState extends State<OtpVerfication> {
   _OtpVerficationState(this.phone);
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
-  final _logger = Logger('com.thesandx.movie_app');
 
   Widget showSnackbar(String msg) {
     return SnackBar(
@@ -55,7 +53,6 @@ class _OtpVerficationState extends State<OtpVerfication> {
     } catch (e) {
       // TODO
       FocusScope.of(context).unfocus();
-      _logger.info("wrong otp enterted $phone");
 
       ScaffoldMessenger.of(context).showSnackBar(showSnackbar("Invalid OTP"));
     }
@@ -89,7 +86,6 @@ class _OtpVerficationState extends State<OtpVerfication> {
         //manual_verification
         codeSent: (String verificationId, [int forceResendingToken]) {
           print("code sent manual");
-          _logger.info("otp sent to phone $phone");
           setState(() {
             _verificationCode = verificationId;
             _otpSent=true;
@@ -214,9 +210,9 @@ class _OtpVerficationState extends State<OtpVerfication> {
           await CommonData.fetchFollwing(FirebaseAuth.instance.currentUser);
           bool val = await CommonData.retriveAPIKey();
           bool isDetail = await CommonData.checkIfUserDetailExists(user);
-          _logger.info("user detail exists $phone");
+
           if (isDetail) {
-            _logger.info("user detail exists $phone");
+
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => HomePage(user)),
@@ -224,7 +220,7 @@ class _OtpVerficationState extends State<OtpVerfication> {
             );
           } else {
 
-            _logger.info("user detail does not exists $phone");
+
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => CompleteProfile(user)),

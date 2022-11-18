@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/models/Results.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -14,7 +13,6 @@ class MoviePost extends StatefulWidget {
 }
 
 class _MoviePostState extends State<MoviePost> {
-  final _logger = Logger('com.thesandx.movie_app');
   final _movieController = TextEditingController();
   final _postController = TextEditingController();
   FocusNode nodeMovie = FocusNode();
@@ -317,7 +315,6 @@ class _MoviePostState extends State<MoviePost> {
       bool val = await CommonData.addPost(post, movie);
       if (val) {
         //show snackbar and navigate;
-        _logger.info("movie posted ${movie.title??"NA"} $post");
         setState(() {
           CommonData.isLoading = false;
         });
