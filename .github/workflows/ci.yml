@@ -47,7 +47,7 @@ jobs:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '3.1.0-9.0.pre'
+          flutter-version: '3.0.1'
       - name: Get version.txt
         uses: actions/download-artifact@v2
         with:
