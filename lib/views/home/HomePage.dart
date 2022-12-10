@@ -101,9 +101,7 @@ class _HomePageState extends State<HomePage> {
   Widget getCurrentPage() {
     if (currentIndex == 1) {
 
-      return ProfilePage(
-          url:
-          "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=100&w=940");
+      return ProfilePage(user_id:FirebaseAuth.instance.currentUser.uid);
 
     }
     if(currentIndex==0){

@@ -2,6 +2,8 @@ import 'package:app_settings/app_settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:movie_app/views/Social/Profile.dart';
+import 'package:movie_app/views/playlist/ShowContactPlayList.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../Services/CommonData.dart';
@@ -48,6 +50,7 @@ class _ContactsState extends State<Contacts> {
           user['mobile'] = user['mobile'].startsWith("+91")?user['mobile'].replaceAll("+91",""):user['mobile'];
           print("current phone number is ${mobile}");
             if (user['mobile'] == mobile) {
+              contact.id = user['user_id'];
               filteredContacts.add(contact);
             }
           }
@@ -100,15 +103,25 @@ class _ContactsState extends State<Contacts> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (context, i) => Padding(
                   padding: const EdgeInsets.all(0.0),
-                  child: Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                    color:Colors.grey[100],
-                    child: ListTile(
-                      title: Text(snapshot.data[i].displayName),
-                      //subtitle: Text(_contacts[i].phones[0].number)
+                  child: InkWell(
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      color:Colors.grey[100],
+                      child: ListTile(
+                        title: Text(snapshot.data[i].displayName),
+                        //subtitle: Text(_contacts[i].phones[0].number)
+                      ),
                     ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ShowContactPlayList(
+                                    snapshot.data[i].displayName,snapshot.data[i].id)));
+                      },
+
                   ),
                 ));
           } else if (snapshot.hasError) {

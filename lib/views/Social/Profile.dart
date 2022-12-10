@@ -8,17 +8,20 @@ import 'package:movie_app/views/profile/profile_edit.dart';
 import '../SplashScreen.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String url;
+  final String user_id;
 
-  ProfilePage({@required this.url});
+  ProfilePage({@required this.user_id});
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfilePageState createState() => _ProfilePageState(user_id: user_id);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final String user_id;
   String name = "Loading...";
   String user_name = "Loading...";
+
+  _ProfilePageState({this.user_id});
 
   void fetchProfileData() async {
     dynamic json = await CommonData.fetchProfileData();
@@ -141,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection(
-                              '/users/${FirebaseAuth.instance.currentUser.uid}/playlist')
+                              '/users/${user_id}/playlist')
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
@@ -198,12 +201,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection(
-                          '/users/${FirebaseAuth.instance.currentUser
-                              .uid}/playlist')
+                          '/users/${user_id}/playlist')
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.active) {
-                          CommonData.savedPlayListSnapshot = snapshot;
+                          //CommonData.savedPlayListSnapshot = snapshot;
                           if (snapshot.data.docs.length > 0) {
                             return playListScreen(snapshot);
                           } else {
