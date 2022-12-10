@@ -27,7 +27,8 @@ ENV PATH "$PATH:/home/ubuntu/flutter/bin"
 
   # Run basic check to download Dark SDK
 RUN flutter doctor
-#clone the repo inside it
+
+  # clone the repo inside it
 RUN git clone https://github.com/thesandx/MoviesX.git
 RUN cp MoviesX/android/app/debug.keystore .android/
 
