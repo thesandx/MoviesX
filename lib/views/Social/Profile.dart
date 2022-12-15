@@ -23,13 +23,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   _ProfilePageState({this.user_id});
 
-  void fetchProfileData() async {
-    dynamic json = await CommonData.fetchProfileData();
-    setState(() {
-      name = json['name'] ?? "NA";
-      user_name = json['user_name'] ?? "NA";
-    });
-  }
 
   List<Color> _startList = [
     Color(0xff608bdc),
@@ -52,6 +45,8 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    CommonData.currentUserId = user_id;
+
   //  fetchProfileData();
   }
 
@@ -66,130 +61,6 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Column(
             children: [
-              // Container(
-              //   margin: EdgeInsets.only(top: 15),
-              //   height: 80,
-              //     width: 80,
-              //     decoration: BoxDecoration(
-              //       borderRadius: BorderRadius.circular(40),
-              //       boxShadow: [
-              //         BoxShadow(
-              //           color: Colors.black.withOpacity(0.2),
-              //           spreadRadius: 5,
-              //           blurRadius: 20,
-              //         )
-              //       ],
-              //     ),
-              //   child: CircleAvatar(
-              //     backgroundColor: Colors.blue.shade800,
-              //     child: Text('${name[0]}',
-              //       style: TextStyle(
-              //         fontSize: 48,
-              //         color: Colors.white
-              //       ),
-              //     ),
-              //   ),
-              // ),
-//          Hero(
-//            tag: widget.url,
-//            child: Container(
-//              margin: EdgeInsets.only(top: 35),
-//              height: 80,
-//              width: 80,
-//              decoration: BoxDecoration(
-//                borderRadius: BorderRadius.circular(40),
-//                boxShadow: [
-//                  BoxShadow(
-//                    color: Colors.black.withOpacity(0.2),
-//                    spreadRadius: 5,
-//                    blurRadius: 20,
-//                  )
-//                ],
-//                image: DecorationImage(
-//                  fit: BoxFit.cover,
-//                  image: NetworkImage(widget.url),
-//                ),
-//              ),
-//            ),
-//          ),
-//               SizedBox(
-//                 height: 10,
-//               ),
-//               Text(
-//                 name ?? "NA",
-//                 style: TextStyle(
-//                   fontSize: 18,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//               Text(
-//                 user_name ?? " NA",
-//                 style: TextStyle(
-//                   fontWeight: FontWeight.bold,
-//                   color: Colors.grey[400],
-//                 ),
-//               ),
-//               TextButton(
-//                   onPressed: () {
-//                     Navigator.push(
-//                         context,
-//                         MaterialPageRoute(
-//                             builder: (context) => CompleteProfile(
-//                                 FirebaseAuth.instance.currentUser)));
-//                   },
-//                   child: Text("Edit Profile")),
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                 children: [
-//                   StreamBuilder<QuerySnapshot>(
-//                       stream: FirebaseFirestore.instance
-//                           .collection(
-//                               '/users/${user_id}/playlist')
-//                           .snapshots(),
-//                       builder: (context, snapshot) {
-//                         if (snapshot.connectionState == ConnectionState.active) {
-//                           playList = snapshot.data.size ?? 0;
-//                           return buildStatColumn(
-//                               '${snapshot.data.size ?? 0}', "PlayList");
-//                         } else {
-//                           return buildStatColumn(
-//                               playList.toString(), "PlayList");
-//                         }
-//                       }),
-//                   StreamBuilder<QuerySnapshot>(
-//                       stream: FirebaseFirestore.instance
-//                           .collection(
-//                               '/users/${FirebaseAuth.instance.currentUser.uid}/follower')
-//                           .where("liked", isEqualTo: true)
-//                           .snapshots(),
-//                       builder: (context, snapshot) {
-//                         if (snapshot.connectionState == ConnectionState.active) {
-//                           followers = snapshot.data.size ?? 0;
-//                           return buildStatColumn(
-//                               '${snapshot.data.size ?? 0}', "Followers");
-//                         } else {
-//                           return buildStatColumn(
-//                               followers.toString(), "Followers");
-//                         }
-//                       }),
-//                   StreamBuilder<QuerySnapshot>(
-//                       stream: FirebaseFirestore.instance
-//                           .collection(
-//                               '/users/${FirebaseAuth.instance.currentUser.uid}/following')
-//                           .where("liked", isEqualTo: true)
-//                           .snapshots(),
-//                       builder: (context, snapshot) {
-//                         if (snapshot.connectionState == ConnectionState.active) {
-//                           following = snapshot.data.size ?? 0;
-//                           return buildStatColumn(
-//                               '${snapshot.data.size ?? 0}', "Following");
-//                         } else {
-//                           return buildStatColumn(
-//                               following.toString(), "Following");
-//                         }
-//                       }),
-//                 ],
-//               ),
               Expanded(
                 child: Container(
                   width: double.infinity,

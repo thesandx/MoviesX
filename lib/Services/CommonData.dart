@@ -17,6 +17,7 @@ class CommonData {
   static AsyncSnapshot<QuerySnapshot> savedPlayListSnapshot;
 
   static bool isLoading = false;
+  static String currentUserId = FirebaseAuth.instance.currentUser.uid;
 
   static String tmdb_api_key;
 
