@@ -38,14 +38,14 @@ class MovieSearch extends SearchDelegate{
     if(val==null || val.isEmpty|| val.length<1){
       return Text("No results found");
     }
-    if(query[0]=="@"){
-      return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return
-            searchUsers(val);
-          }
-      );
-    }
+    // if(query[0]=="@"){
+    //   return StatefulBuilder(
+    //       builder: (BuildContext context, StateSetter setState) {
+    //         return
+    //         searchUsers(val);
+    //       }
+    //   );
+    // }
     return searchResult(val);
 
   }
@@ -64,19 +64,19 @@ class MovieSearch extends SearchDelegate{
                   fontSize: 28
               ),
             ),
-        Text("use @ to search users",
-          style: TextStyle(
-              fontSize: 18
-          ),
-        )
+        // Text("use @ to search users",
+        //   style: TextStyle(
+        //       fontSize: 18
+        //   ),
+        // )
           ],
         ),
       );
     }
 
-    if(query[0]=="@"){
-      return searchUsers(val);
-    }
+    // if(query[0]=="@"){
+    //   return searchUsers(val);
+    // }
 
     return searchResult(val);
 

@@ -20,9 +20,9 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   final _formKey = GlobalKey<FormState>();
   final List<String> errors = [];
   String fullName;
-  String userName;
+  //String userName;
   final _nameController = TextEditingController();
-  final _userNameController = TextEditingController();
+  //final _userNameController = TextEditingController();
   bool showError = false;
 
   String error = "error";
@@ -36,17 +36,17 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         children: [
           buildNameFormField(),
           SizedBox(height: 30),
-          buildUserNameFormField(),
-          Visibility(
-            visible: showError,
-            child: Text("Username already exists",
-              style: TextStyle(
-                color: Colors.redAccent,
-                fontSize: 12,
-                fontFamily: 'Nunito',
-              ),
-            ),
-          ),
+          //buildUserNameFormField(),
+          // Visibility(
+          //   visible: showError,
+          //   child: Text("Username already exists",
+          //     style: TextStyle(
+          //       color: Colors.redAccent,
+          //       fontSize: 12,
+          //       fontFamily: 'Nunito',
+          //     ),
+          //   ),
+          // ),
 
           SizedBox(height: 60),
           //FormError(errors: errors),
@@ -95,7 +95,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     // TODO: implement dispose
     super.dispose();
     _nameController?.dispose();
-    _userNameController?.dispose();
+    //_userNameController?.dispose();
   }
 
   TextStyle getTextStyle(double fontSize, Color textColor) {
@@ -112,16 +112,16 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     });
     if(_formKey.currentState.validate()) {
       fullName = _nameController.text.trim();
-      userName = '@'+_userNameController.text.trim();
-      bool val = await CommonData.isUsernameAvailable(userName);
-      if(val){
-        setState(() {
-          showError = true;
-          CommonData.isLoading = false;
-        });
-        return;
-      }
-      bool value = await CommonData.addUserData(fullName, userName);
+      //userName = '@'+_userNameController.text.trim();
+      //bool val = await CommonData.isUsernameAvailable(userName);
+      // if(val){
+      //   setState(() {
+      //     showError = true;
+      //     CommonData.isLoading = false;
+      //   });
+      //   return;
+      // }
+      bool value = await CommonData.addUserData(fullName, 'null');
       setState(() {
         CommonData.isLoading= false;
       });
@@ -147,39 +147,39 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
 
 
-  TextFormField buildUserNameFormField() {
-    return TextFormField(
-      controller: _userNameController,
-      onSaved: (newValue) => userName = newValue,
-      inputFormatters: [FilteringTextInputFormatter.deny(new RegExp('[ -]'))],
-
-      validator: (value){
-        if (value == null ||
-            value.isEmpty ||
-            value.length == 0) {
-          //addError(error: error);
-          return "username can't be empty";
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        prefix: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Icon(
-            Icons.alternate_email,
-            color: Colors.grey[700],
-            size: 20,
-          ),
-        ),
-
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0)),
-        labelText: "User Name",
-        hintText: "Enter Your User name",
-        // floatingLabelBehavior: FloatingLabelBehavior.always
-      ),
-    );
-  }
+  // TextFormField buildUserNameFormField() {
+  //   return TextFormField(
+  //     controller: _userNameController,
+  //     onSaved: (newValue) => userName = newValue,
+  //     inputFormatters: [FilteringTextInputFormatter.deny(new RegExp('[ -]'))],
+  //
+  //     validator: (value){
+  //       if (value == null ||
+  //           value.isEmpty ||
+  //           value.length == 0) {
+  //         //addError(error: error);
+  //         return "username can't be empty";
+  //       }
+  //       return null;
+  //     },
+  //     decoration: InputDecoration(
+  //       prefix: Padding(
+  //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
+  //         child: Icon(
+  //           Icons.alternate_email,
+  //           color: Colors.grey[700],
+  //           size: 20,
+  //         ),
+  //       ),
+  //
+  //       border: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(8.0)),
+  //       labelText: "User Name",
+  //       hintText: "Enter Your User name",
+  //       // floatingLabelBehavior: FloatingLabelBehavior.always
+  //     ),
+  //   );
+  // }
 
   TextFormField buildNameFormField() {
     return TextFormField(
@@ -197,7 +197,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
             value.trim().length == 0
         ) {
           //addError(error: error);
-          return "Name can't be empty";;
+          return "Name can't be empty";
         }
         return null;
       },
