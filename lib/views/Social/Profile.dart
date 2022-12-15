@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchProfileData();
+  //  fetchProfileData();
   }
 
   int playList;
@@ -66,30 +66,30 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Column(
             children: [
-              Container(
-                margin: EdgeInsets.only(top: 15),
-                height: 80,
-                  width: 80,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 5,
-                        blurRadius: 20,
-                      )
-                    ],
-                  ),
-                child: CircleAvatar(
-                  backgroundColor: Colors.blue.shade800,
-                  child: Text('${name[0]}',
-                    style: TextStyle(
-                      fontSize: 48,
-                      color: Colors.white
-                    ),
-                  ),
-                ),
-              ),
+              // Container(
+              //   margin: EdgeInsets.only(top: 15),
+              //   height: 80,
+              //     width: 80,
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(40),
+              //       boxShadow: [
+              //         BoxShadow(
+              //           color: Colors.black.withOpacity(0.2),
+              //           spreadRadius: 5,
+              //           blurRadius: 20,
+              //         )
+              //       ],
+              //     ),
+              //   child: CircleAvatar(
+              //     backgroundColor: Colors.blue.shade800,
+              //     child: Text('${name[0]}',
+              //       style: TextStyle(
+              //         fontSize: 48,
+              //         color: Colors.white
+              //       ),
+              //     ),
+              //   ),
+              // ),
 //          Hero(
 //            tag: widget.url,
 //            child: Container(
@@ -112,84 +112,84 @@ class _ProfilePageState extends State<ProfilePage> {
 //              ),
 //            ),
 //          ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                name ?? "NA",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                user_name ?? " NA",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[400],
-                ),
-              ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CompleteProfile(
-                                FirebaseAuth.instance.currentUser)));
-                  },
-                  child: Text("Edit Profile")),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection(
-                              '/users/${user_id}/playlist')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.active) {
-                          playList = snapshot.data.size ?? 0;
-                          return buildStatColumn(
-                              '${snapshot.data.size ?? 0}', "PlayList");
-                        } else {
-                          return buildStatColumn(
-                              playList.toString(), "PlayList");
-                        }
-                      }),
-                  StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection(
-                              '/users/${FirebaseAuth.instance.currentUser.uid}/follower')
-                          .where("liked", isEqualTo: true)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.active) {
-                          followers = snapshot.data.size ?? 0;
-                          return buildStatColumn(
-                              '${snapshot.data.size ?? 0}', "Followers");
-                        } else {
-                          return buildStatColumn(
-                              followers.toString(), "Followers");
-                        }
-                      }),
-                  StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection(
-                              '/users/${FirebaseAuth.instance.currentUser.uid}/following')
-                          .where("liked", isEqualTo: true)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.active) {
-                          following = snapshot.data.size ?? 0;
-                          return buildStatColumn(
-                              '${snapshot.data.size ?? 0}', "Following");
-                        } else {
-                          return buildStatColumn(
-                              following.toString(), "Following");
-                        }
-                      }),
-                ],
-              ),
+//               SizedBox(
+//                 height: 10,
+//               ),
+//               Text(
+//                 name ?? "NA",
+//                 style: TextStyle(
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//               Text(
+//                 user_name ?? " NA",
+//                 style: TextStyle(
+//                   fontWeight: FontWeight.bold,
+//                   color: Colors.grey[400],
+//                 ),
+//               ),
+//               TextButton(
+//                   onPressed: () {
+//                     Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                             builder: (context) => CompleteProfile(
+//                                 FirebaseAuth.instance.currentUser)));
+//                   },
+//                   child: Text("Edit Profile")),
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                 children: [
+//                   StreamBuilder<QuerySnapshot>(
+//                       stream: FirebaseFirestore.instance
+//                           .collection(
+//                               '/users/${user_id}/playlist')
+//                           .snapshots(),
+//                       builder: (context, snapshot) {
+//                         if (snapshot.connectionState == ConnectionState.active) {
+//                           playList = snapshot.data.size ?? 0;
+//                           return buildStatColumn(
+//                               '${snapshot.data.size ?? 0}', "PlayList");
+//                         } else {
+//                           return buildStatColumn(
+//                               playList.toString(), "PlayList");
+//                         }
+//                       }),
+//                   StreamBuilder<QuerySnapshot>(
+//                       stream: FirebaseFirestore.instance
+//                           .collection(
+//                               '/users/${FirebaseAuth.instance.currentUser.uid}/follower')
+//                           .where("liked", isEqualTo: true)
+//                           .snapshots(),
+//                       builder: (context, snapshot) {
+//                         if (snapshot.connectionState == ConnectionState.active) {
+//                           followers = snapshot.data.size ?? 0;
+//                           return buildStatColumn(
+//                               '${snapshot.data.size ?? 0}', "Followers");
+//                         } else {
+//                           return buildStatColumn(
+//                               followers.toString(), "Followers");
+//                         }
+//                       }),
+//                   StreamBuilder<QuerySnapshot>(
+//                       stream: FirebaseFirestore.instance
+//                           .collection(
+//                               '/users/${FirebaseAuth.instance.currentUser.uid}/following')
+//                           .where("liked", isEqualTo: true)
+//                           .snapshots(),
+//                       builder: (context, snapshot) {
+//                         if (snapshot.connectionState == ConnectionState.active) {
+//                           following = snapshot.data.size ?? 0;
+//                           return buildStatColumn(
+//                               '${snapshot.data.size ?? 0}', "Following");
+//                         } else {
+//                           return buildStatColumn(
+//                               following.toString(), "Following");
+//                         }
+//                       }),
+//                 ],
+//               ),
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -229,32 +229,32 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
           //i.e log out button below
-          Positioned(
-            top:10,
-            right: 10,
-            child:  Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                highlightColor: Colors.red,
-                child: Text(
-                  'LogOut',
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 16,
-                    fontFamily: 'Nunito',
-                  ),
-                ),
-                onTap: () async {
-                  await FirebaseAuth.instance.signOut();
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SplashScreen()),
-                          (route) => false);
-                },
-              ),
-            ),
-          ),
+          // Positioned(
+          //   top:10,
+          //   right: 10,
+          //   child:  Padding(
+          //     padding: const EdgeInsets.all(8.0),
+          //     child: InkWell(
+          //       highlightColor: Colors.red,
+          //       child: Text(
+          //         'LogOut',
+          //         style: TextStyle(
+          //           color: Colors.redAccent,
+          //           fontSize: 16,
+          //           fontFamily: 'Nunito',
+          //         ),
+          //       ),
+          //       onTap: () async {
+          //         await FirebaseAuth.instance.signOut();
+          //         Navigator.pushAndRemoveUntil(
+          //             context,
+          //             MaterialPageRoute(
+          //                 builder: (context) => SplashScreen()),
+          //                 (route) => false);
+          //       },
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

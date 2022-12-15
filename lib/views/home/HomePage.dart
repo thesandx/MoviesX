@@ -11,6 +11,8 @@ import 'package:movie_app/views/home/Feed.dart';
 import 'package:movie_app/widgets/SearchBar.dart';
 
 import '../../constants.dart';
+import '../SplashScreen.dart';
+import '../profile/profile_edit.dart';
 
 class HomePage extends StatefulWidget {
   User user;
@@ -23,11 +25,25 @@ class _HomePageState extends State<HomePage> {
   User user;
   _HomePageState(this.user);
   int currentIndex;
+  String name = "Loading...";
+  String user_name = "Loading...";
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void fetchProfileData() async {
+    dynamic json = await CommonData.fetchProfileData();
+    setState(() {
+      name = json['name'] ?? "NA";
+      user_name = json['user_name'] ?? "NA";
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     CommonData.addDefaultPlaylist(user);
+    fetchProfileData();
+
     currentIndex = 0;
 
   }
@@ -89,11 +105,115 @@ class _HomePageState extends State<HomePage> {
         return value == true;
       },
       child: Scaffold(
+        key: _scaffoldKey,
+        endDrawerEnableOpenDragGesture: false,
         appBar: buildAppBar(),
+        drawer: Drawer(
+          child: ListView(
+            children: [
+              DrawerHeader(
+                child: buildDrawerHeader(context)
+              ),
+              buildMenuItems(context)
+            ],
+          ),
+        ),
         //backgroundColor: Colors.white,
         body: getCurrentPage(),
         bottomNavigationBar:
             Container(height: 60, child: BottomNavigationBar()),
+      ),
+    );
+  }
+
+  Widget buildDrawerHeader(BuildContext context){
+    return  Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: 15),
+          height: 80,
+          width: 80,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(40),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blueAccent.withOpacity(0.2),
+                spreadRadius: 5,
+                blurRadius: 20,
+              )
+            ],
+          ),
+          child: CircleAvatar(
+            backgroundColor: Colors.blue.shade800,
+            child: Text('${name[0]}',
+              style: TextStyle(
+                  fontSize: 48,
+                  color: Colors.white
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Text(
+          name ?? "NA",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildMenuItems(BuildContext context){
+    return Container(
+        padding: EdgeInsets.all(24),
+      child: Wrap(
+        runSpacing: 16,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.edit,
+              color: Colors.blueAccent,
+            ),
+            title: const Text("Edit Profile",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent
+              ),
+            ),
+            onTap: (){
+              Navigator.of(context).pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CompleteProfile(
+                                FirebaseAuth.instance.currentUser)));
+                  },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout_rounded,
+                color: Colors.redAccent
+            ),
+            title: const Text("Log Out",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.redAccent
+              ),
+            ),
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SplashScreen()),
+                      (route) => false);
+            },
+          ),
+        ],
       ),
     );
   }
@@ -179,10 +299,15 @@ class _HomePageState extends State<HomePage> {
       centerTitle: true,
       backgroundColor: Color(0xfff3f5f7),
       elevation: 0,
-      leading: IconButton(
-        padding: EdgeInsets.only(left: kDefaultPadding),
-        icon: SvgPicture.asset("assets/icons/menu.svg"),
-        onPressed: () {},
+      leading:
+        IconButton(
+          padding: EdgeInsets.only(left: kDefaultPadding),
+          icon: SvgPicture.asset("assets/icons/menu.svg"),
+          onPressed: () {
+            //print("button press kiya");
+            fetchProfileData();
+            _scaffoldKey.currentState.openDrawer();
+          },
       ),
       title: Text("MoviesX",
           style: Theme.of(context)

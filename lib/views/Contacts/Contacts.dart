@@ -44,11 +44,11 @@ class _ContactsState extends State<Contacts> {
       for (var contact in contacts) {
         for (var phone in contact.phones) {
           for (var user in allusers) {
-          print("user phone number is ${user['mobile']}");
+          //print("user phone number is ${user['mobile']}");
           var mobile = phone.number.replaceAll(' ', '');
           mobile = mobile.startsWith("+91")?mobile.replaceAll("+91",""):mobile;
           user['mobile'] = user['mobile'].startsWith("+91")?user['mobile'].replaceAll("+91",""):user['mobile'];
-          print("current phone number is ${mobile}");
+          //print("current phone number is ${mobile}");
             if (user['mobile'] == mobile) {
               contact.id = user['user_id'];
               filteredContacts.add(contact);
