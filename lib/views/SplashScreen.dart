@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/login/login_otp.dart';
@@ -14,11 +13,9 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final _logger = Logger('com.thesandx.movie_app');
   void initialize(BuildContext context) {
     Firebase.initializeApp().whenComplete(() {
       print("firebase initialization completed");
-      _logger.info("firebase initialization completed");
       User user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         print(user.phoneNumber);

@@ -20,12 +20,9 @@ class Button extends StatelessWidget {
         child: SizedBox(
           width: size.width * 0.5,
           height: 50.0,
-          child: RaisedButton(
-            elevation: 10.0,
-            color: Color(0xFF4A90E2),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100.0),
-              side: BorderSide(color: Color(0xFF4A90E2)),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Colors.blue,
             ),
             onPressed: press,
             child: Row(

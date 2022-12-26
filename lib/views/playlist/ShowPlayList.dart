@@ -62,25 +62,28 @@ class _ShowPlayListState extends State<ShowPlayList> {
               dividerColor: Colors.white,
               iconTheme: IconThemeData(color: Colors.black),
             ),
-            child: PopupMenuButton<int>(
-              color: Colors.white,
-              onSelected: (item) => onSelected(context, item),
-              itemBuilder: (context) => [
-                // PopupMenuDivider(),
-                PopupMenuItem<int>(
-                  value: 0,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.delete,
-                        color: Colors.redAccent,
-                      ),
-                      const SizedBox(width: 8),
-                      Text('Delete playlist'),
-                    ],
+            child: Visibility(
+              visible: CommonData.currentUserId == FirebaseAuth.instance.currentUser.uid,
+              child: PopupMenuButton<int>(
+                color: Colors.white,
+                onSelected: (item) => onSelected(context, item),
+                itemBuilder: (context) => [
+                  // PopupMenuDivider(),
+                  PopupMenuItem<int>(
+                    value: 0,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.delete,
+                          color: Colors.redAccent,
+                        ),
+                        const SizedBox(width: 8),
+                        Text('Delete playlist'),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           )
         ],

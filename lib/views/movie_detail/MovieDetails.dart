@@ -194,16 +194,30 @@ class _MovieDetailsState extends State<MovieDetails> {
                 SizedBox(
                   height: 64,
                   width: 64,
-                  child: FlatButton(
-                    onPressed: () => MyBottomSheet()
-                        .showBottomSheet(context, _formKey, movie.id),
-                    color: Color(0xFFFE6D8E),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Icon(
-                      Icons.add,
-                      size: 28,
-                      color: Colors.white,
+                  //inspired from backbutton(line 144)  design i.e MybackButton.dart class
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.pinkAccent,
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(10)),
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(0, 5),
+                            blurRadius: 50,
+                            color: Color(0xFF12153D).withOpacity(0.2),
+                          ),
+                        ]),
+                    //color:Colors.pinkAccent,
+                    child: TextButton(
+                      onPressed: () => MyBottomSheet()
+                          .showBottomSheet(context, _formKey, movie.id),
+                      style: TextButton.styleFrom(
+                                primary: Colors.blue),
+                      child: Icon(
+                        Icons.add,
+                        size: 28,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 )

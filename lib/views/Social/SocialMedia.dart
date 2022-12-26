@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/Social/MoviePost.dart';
 import 'package:movie_app/views/movie_detail/MovieDetails.dart';
@@ -14,7 +13,6 @@ class SocialMedia extends StatefulWidget {
 
 class _SocialMediaState extends State<SocialMedia> {
 
-  final _logger = Logger('com.thesandx.movie_app');
   static final _formKey = GlobalKey<FormState>();
 
   getFollowing() async {
@@ -122,7 +120,7 @@ class _SocialMediaState extends State<SocialMedia> {
     );
   }
 
-  Container buildPostSection(DocumentSnapshot document) {
+  Container buildPostSection(DocumentSnapshot<Map<String, dynamic>> document) {
     return Container(
       margin: EdgeInsets.only(bottom: 8), //separtion b/w list items
       padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
@@ -178,7 +176,7 @@ class _SocialMediaState extends State<SocialMedia> {
     );
   }
 
-  Row buildPostFirstRow(String urlProfilePhoto, DocumentSnapshot document) {
+  Row buildPostFirstRow(String urlProfilePhoto, DocumentSnapshot<Map<String, dynamic>> document) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -200,7 +198,7 @@ class _SocialMediaState extends State<SocialMedia> {
             SizedBox(
               width: 5,
             ),
-            StreamBuilder<DocumentSnapshot>(
+            StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
                     .doc(document.data()['user_id'])
@@ -313,7 +311,6 @@ class _SocialMediaState extends State<SocialMedia> {
   }
 
   void addMovie(int movie_id, bool isLiked, String docId,String poster) async {
-    _logger.info("movie liked $movie_id ${!isLiked}");
     await CommonData.addLikedMovie(
         FirebaseAuth.instance.currentUser, movie_id, !isLiked,poster);
     await CommonData.increaseLikesCount(docId, !isLiked);
