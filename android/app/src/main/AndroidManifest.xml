@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
    <application
-        android:label="movie_app"
+        android:label="MoviesX"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
