@@ -2,11 +2,11 @@ name: APK_build
 on:
   push:
     branches:
-      - master
+      - master1
 
   pull_request:
     branches:
-      -master
+      -master1
 
 jobs:
   version_number:
