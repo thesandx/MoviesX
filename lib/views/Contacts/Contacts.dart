@@ -30,7 +30,15 @@ class _ContactsState extends State<Contacts> {
 
   void _listenForPermissionStatus() async {
     final status = await _permission.status;
-    setState(() => _permissionStatus = status);
+    setState(() {
+      _permissionStatus = status;
+      if(_permissionStatus==PermissionStatus.granted) {
+        _permissionDenied = false;
+      }
+      else{
+        _permissionDenied = true;
+      }
+    });
   }
   Future<List<Contact>> _fetchContacts() async {
     if (!await FlutterContacts.requestPermission(readonly: true)) {
@@ -73,14 +81,21 @@ class _ContactsState extends State<Contacts> {
       //open app setting
       AppSettings.openAppSettings();
     }
-    if(status == PermissionStatus.granted){
-      _fetchContacts();
-    }
-
+    // if(status == PermissionStatus.granted){
+    //   await _fetchContacts();
+    //   print("fetch contact ho gya");
+    // }
     setState(() {
       print(status);
       _permissionStatus = status;
       print(_permissionStatus);
+      if(_permissionStatus==PermissionStatus.granted) {
+        _permissionDenied = false;
+        print("setstate ho gya");
+      }
+      else{
+        _permissionDenied = true;
+      }
     });
   }
 
@@ -90,8 +105,8 @@ class _ContactsState extends State<Contacts> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text('Permission denied'),
-          TextButton(onPressed: requestPermission, child: Text('Try again')),
+          //Text('Permission denied'),
+          ElevatedButton(onPressed: requestPermission, child: Text('Show Contacts')),
         ],
       ));
       // if (_contacts == null) return Center(child: CircularProgressIndicator());

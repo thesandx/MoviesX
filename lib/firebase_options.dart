@@ -70,7 +70,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '716896267310',
     projectId: 'moviesx-463cf',
     storageBucket: 'moviesx-463cf.appspot.com',
-    androidClientId: '716896267310-58f4te53jncfhkgmnfvrgd90foepvsr1.apps.googleusercontent.com',
+    androidClientId: '716896267310-43juhqaijvag2alg9oprtd99gm559iah.apps.googleusercontent.com',
     iosClientId: '716896267310-id86kst94de7stn6ed2ahudo3rov1msa.apps.googleusercontent.com',
     iosBundleId: 'com.thesandx.movieApp',
   );
