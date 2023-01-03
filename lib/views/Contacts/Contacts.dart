@@ -74,6 +74,58 @@ class _ContactsState extends State<Contacts> {
     }
   }
 
+  Future<List<Contact>> _efficientfetchContacts() async {
+    if (!await FlutterContacts.requestPermission(readonly: true)) {
+      setState(() => _permissionDenied = true);
+    } else {
+      final contacts = await FlutterContacts.getContacts(withProperties: true);
+
+      List<dynamic> allusers = await CommonData.getAllUsers();
+
+      List<Contact> filteredContacts = [];
+
+      Set<String> set1 = new Set();
+      Set<String> set2 = new Set();
+      Map<String,Contact> map1 = new Map();
+      Map<String,String> map2= new Map();
+
+      for (var contact in contacts) {
+        for (var phone in contact.phones) {
+          //print("user phone number is ${user['mobile']}");
+          var mobile = phone.number.replaceAll(' ', '');
+          mobile = mobile.startsWith("+91")?mobile.replaceAll("+91",""):mobile;
+          set1.add(mobile);
+          //print("current phone number is ${mobile}");
+          map1[mobile] = contact;
+
+        }
+      }
+      for(var user in allusers){
+        user['mobile'] = user['mobile'].startsWith("+91")?user['mobile'].replaceAll("+91",""):user['mobile'];
+        set2.add(user['mobile']);
+        map2[user['mobile']] = user['user_id'];
+      }
+      Set<String> commonContacts = set2.intersection(set1);
+      commonContacts.forEach((mobile) {
+        Contact contact = map1[mobile];
+        contact.id = map2[mobile];
+        filteredContacts.add(contact);
+      });
+      //
+      // if (user['mobile'] == mobile) {
+      //   contact.id = user['user_id'];
+      //   filteredContacts.add(contact);
+      // }
+
+      //fetch contacts from firebase
+      //compare with contacts
+
+
+      return filteredContacts;
+      //setState(() => _contacts = filteredContacts);
+    }
+  }
+
   Future requestPermission() async {
     final status = await Permission.contacts.request();
 
