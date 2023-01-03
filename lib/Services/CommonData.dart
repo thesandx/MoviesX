@@ -20,6 +20,7 @@ class CommonData {
   static String currentUserId = FirebaseAuth.instance.currentUser.uid;
 
   static String tmdb_api_key;
+  static bool force_update;
 
   static String image_NA =
       "https://1.bp.blogspot.com/-JXjPS9M7MMU/XX39ZP97p4I/AAAAAAAAABE/VQYxrz_roLcXRf5m1nyxTYIxFh7KGow7wCPcBGAYYCw/s1600/df1.jpg";
@@ -459,6 +460,7 @@ class CommonData {
       print("api_key mil gya");
       //print(documentSnapshot.data());
       tmdb_api_key = documentSnapshot.data()['v3_auth'];
+      force_update = documentSnapshot.data()['force_update'];
 
 
       return true;

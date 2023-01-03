@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:movie_app/Services/CommonData.dart';
 import 'package:movie_app/views/Contacts/Contacts.dart';
 import 'package:movie_app/views/Social/Profile.dart';
@@ -28,6 +29,10 @@ class _HomePageState extends State<HomePage> {
   String name = "Loading...";
   String user_name = "Loading...";
 
+  bool _flexibleUpdateAvailable = false;
+
+
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void fetchProfileData() async {
@@ -43,9 +48,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     CommonData.addDefaultPlaylist(user);
     fetchProfileData();
-
     currentIndex = 0;
-
+    checkForUpdate();
   }
 
 
@@ -55,6 +59,45 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       currentIndex = index;
     });
+  }
+
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> checkForUpdate() async {
+    // print("method call kiya");
+    InAppUpdate.checkForUpdate().then((updateInfo) {
+      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+        if (CommonData.force_update && updateInfo.immediateUpdateAllowed) {
+          // Perform immediate update
+          InAppUpdate.performImmediateUpdate().then((appUpdateResult) {
+            if (appUpdateResult == AppUpdateResult.success) {
+              //App Update successful
+              showSnack("Success!");
+            }
+          });
+        } else if (updateInfo.flexibleUpdateAllowed) {
+          //Perform flexible update
+          InAppUpdate.startFlexibleUpdate().then((appUpdateResult) {
+            if (appUpdateResult == AppUpdateResult.success) {
+              //App Update successful
+              InAppUpdate.completeFlexibleUpdate();
+              showSnack("Success!");
+            }
+          });
+        }
+      }
+    }).catchError((e) {
+      showSnack(e.toString());
+    });
+  }
+
+
+
+  void showSnack(String text) {
+    if (_scaffoldKey.currentContext != null) {
+      ScaffoldMessenger.of(_scaffoldKey.currentContext)
+          .showSnackBar(SnackBar(content: Text(text)));
+    }
   }
 
   @override
@@ -220,13 +263,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget getCurrentPage() {
     if (currentIndex == 1) {
-
       return ProfilePage(user_id:FirebaseAuth.instance.currentUser.uid);
-
     }
     if(currentIndex==0){
-
-
       return Feed();
     }
     if(currentIndex==2){

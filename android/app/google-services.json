@@ -14,43 +14,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "716896267310-58f4te53jncfhkgmnfvrgd90foepvsr1.apps.googleusercontent.com",
+          "client_id": "716896267310-43juhqaijvag2alg9oprtd99gm559iah.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.thesandx.movie_app",
-            "certificate_hash": "db10d3d851df49ea013b2577106c754ec44ab167"
+            "certificate_hash": "a9d51f16a1eb20d3df92d0722bf2186fe0e35a44"
           }
         },
         {
-          "client_id": "716896267310-5pd4d9ctpsun5c3k34ab0kafd61un501.apps.googleusercontent.com",
+          "client_id": "716896267310-s5pcllrtg3re7bcn50mbqtrbasik0vnd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.thesandx.movie_app",
-            "certificate_hash": "cd91d55e02752cdc06f26f8ec35941fcd08b4513"
-          }
-        },
-        {
-          "client_id": "716896267310-99dskvcps06nimir5rblssp022nfmejb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.thesandx.movie_app",
-            "certificate_hash": "b06053ffbbacab3039e964de75cd10994c939b57"
-          }
-        },
-        {
-          "client_id": "716896267310-b65i0mkfacppnm333ffih1u3h3bitj07.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.thesandx.movie_app",
-            "certificate_hash": "ed2f2b7476a8e8702ebdc4da67d0d53d5c47f243"
-          }
-        },
-        {
-          "client_id": "716896267310-bbqugnjcl5b3qq6l688sdfobipunsp1o.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.thesandx.movie_app",
-            "certificate_hash": "b5d7cfa8fb61415e9e78fde76faed838b6b75cd1"
+            "certificate_hash": "7ecca75bed1e1b37657f30a2c9dd5dddc0886a23"
           }
         },
         {
@@ -69,6 +45,13 @@
             {
               "client_id": "716896267310-vr9v4ppno1jh8pci94urgn13c3vk1rkv.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "716896267310-id86kst94de7stn6ed2ahudo3rov1msa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.thesandx.movieApp"
+              }
             }
           ]
         }
