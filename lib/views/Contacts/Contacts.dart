@@ -55,6 +55,7 @@ class _ContactsState extends State<Contacts> {
           //print("user phone number is ${user['mobile']}");
           var mobile = phone.number.replaceAll(' ', '');
           mobile = mobile.startsWith("+91")?mobile.replaceAll("+91",""):mobile;
+          mobile = mobile.startsWith("0")?mobile.substring(1):mobile;
           user['mobile'] = user['mobile'].startsWith("+91")?user['mobile'].replaceAll("+91",""):user['mobile'];
           //print("current phone number is ${mobile}");
             if (user['mobile'] == mobile) {
