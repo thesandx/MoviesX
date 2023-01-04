@@ -41,6 +41,9 @@ class _ContactsState extends State<Contacts> {
     });
   }
   Future<List<Contact>> _fetchContacts() async {
+    if(CommonData.commonContacts!=null && CommonData.commonContacts.isNotEmpty ){
+      return CommonData.commonContacts;
+    }
     if (!await FlutterContacts.requestPermission(readonly: true)) {
       setState(() => _permissionDenied = true);
     } else {
@@ -69,7 +72,7 @@ class _ContactsState extends State<Contacts> {
       //fetch contacts from firebase
       //compare with contacts
 
-
+  CommonData.commonContacts = filteredContacts;
   return filteredContacts;
       //setState(() => _contacts = filteredContacts);
     }

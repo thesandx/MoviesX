@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/contact.dart';
 import 'package:http/http.dart' as http;
 import 'package:movie_app/models/MovieCasts.dart';
 import 'package:movie_app/models/MovieDetailModel.dart';
@@ -36,6 +37,8 @@ class CommonData {
   static List<Results> popularMovies = [];
   static List<Show> trendingTv = [];
   static List<String> followingUsers = [];
+
+  static List<Contact> commonContacts = [];
 
   static Map<int, bool> likedMovies = new Map();
 
