@@ -147,7 +147,7 @@ class _ContactsState extends State<Contacts> {
       print(_permissionStatus);
       if(_permissionStatus==PermissionStatus.granted) {
         _permissionDenied = false;
-        print("setstate ho gya");
+        //print("setstate ho gya");
       }
       else{
         _permissionDenied = true;

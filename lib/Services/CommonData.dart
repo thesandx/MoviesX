@@ -244,7 +244,7 @@ class CommonData {
     List<String> res = [];
     following.docs.forEach((doc) {
       res.add(doc['user_id']);
-      print("${doc['user_id']}");
+      //print("${doc['user_id']}");
     });
     followingUsers.clear();
     followingUsers.addAll(res);
@@ -259,7 +259,7 @@ class CommonData {
       DocumentSnapshot documentSnapshot = await following.doc(followingId).get();
       if (documentSnapshot.exists) {
         print(documentSnapshot.data());
-        print("detail exists");
+        //print("detail exists");
         await following.doc(followingId).update({
           "liked": liked,
           "user_id": followingId
@@ -272,7 +272,7 @@ class CommonData {
           "liked": liked,
           "user_id": followingId
         });
-        print("following added successfully " + followingId);
+        //print("following added successfully " + followingId);
       }
 
 
@@ -284,7 +284,7 @@ class CommonData {
       DocumentSnapshot documentSnapshot1 = await follower.doc(followerId).get();
       if (documentSnapshot1.exists) {
         print(documentSnapshot1.data());
-        print("detail exists");
+        //print("detail exists");
         await follower.doc(followerId).update({
           "liked": liked,
           "user_id": followerId
@@ -298,7 +298,7 @@ class CommonData {
           "liked": liked,
           "user_id": followerId
         });
-        print("follower added successfully " + followerId);
+        //print("follower added successfully " + followerId);
         if(liked){
           followingUsers.add(followingId);
         }
@@ -310,7 +310,7 @@ class CommonData {
       }
     } catch (e) {
       // TODO
-      print("error aa gya");
+      //print("error aa gya");
       return false;
     }
   }
@@ -321,7 +321,7 @@ class CommonData {
             region);
     print(url);
     var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
+    //print('Response status: ${response.statusCode}');
     // print('Response body: ${response.body}');
     var data = response.body;
 
@@ -329,7 +329,7 @@ class CommonData {
     var myjson = jsonDecode(data);
     //print(myjson);
     TrendingMovies trendingMovies = TrendingMovies.fromJson(myjson);
-    print(trendingMovies.results.length);
+    //print(trendingMovies.results.length);
     return trendingMovies.results;
   }
 
@@ -340,7 +340,7 @@ class CommonData {
             region);
     print(url);
     var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
+    //print('Response status: ${response.statusCode}');
     // print('Response body: ${response.body}');
     var data = response.body;
 
@@ -348,7 +348,7 @@ class CommonData {
     var myjson = jsonDecode(data);
     //print(myjson);
     TrendingMovies trendingMovies = TrendingMovies.fromJson(myjson);
-    print(trendingMovies.results.length);
+    //print(trendingMovies.results.length);
     return trendingMovies.results;
   }
 
@@ -356,9 +356,9 @@ class CommonData {
     var url = Uri.parse(
         tmdb_base_url + 'movie/now_playing?api_key=' + tmdb_api_key + language +
             region);
-    print(url);
+    //print(url);
     var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
+    //print('Response status: ${response.statusCode}');
     // print('Response body: ${response.body}');
     var data = response.body;
 
@@ -373,9 +373,9 @@ class CommonData {
   static Future<List<Results>> findTrendingMovies() async {
     var url = Uri.parse(
         tmdb_base_url + 'trending/movie/day?api_key=' + tmdb_api_key);
-    print(url);
+    //print(url);
     var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
+    //print('Response status: ${response.statusCode}');
     // print('Response body: ${response.body}');
     var data = response.body;
 
@@ -390,9 +390,9 @@ class CommonData {
   static Future<WatchProvider> getWatchProvider(int movie_id) async{
     var url = Uri.parse(
         tmdb_base_url + 'movie/$movie_id/watch/providers?api_key=' + tmdb_api_key);
-    print(url);
+    //print(url);
     var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
+    //print('Response status: ${response.statusCode}');
     // print('Response body: ${response.body}');
     var data = response.body;
 
@@ -406,9 +406,9 @@ class CommonData {
   static Future<MovieCasts> getmovieCasts(int movie_id) async{
     var url = Uri.parse(
         tmdb_base_url + 'movie/$movie_id/credits?api_key=' + tmdb_api_key);
-    print(url);
+    //print(url);
     var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
+    //print('Response status: ${response.statusCode}');
     // print('Response body: ${response.body}');
     var data = response.body;
 
@@ -421,12 +421,12 @@ class CommonData {
 
 
   static Future<MovieDetailModel> getMovieDetail (int movie_id) async {
-    print("movie id is $movie_id");
+    //print("movie id is $movie_id");
     var url = Uri.parse(
         tmdb_base_url + 'movie/$movie_id?api_key=' + tmdb_api_key);
-    print(url);
+    //print(url);
     var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
+    //print('Response status: ${response.statusCode}');
     // print('Response body: ${response.body}');
     var data = response.body;
 
@@ -460,7 +460,7 @@ class CommonData {
 
     DocumentSnapshot<Map<String,dynamic>> documentSnapshot = await tmdb.doc("tmdb_api_key").get();
     if (documentSnapshot.exists) {
-      print("api_key mil gya");
+      //print("api_key mil gya");
       //print(documentSnapshot.data());
       tmdb_api_key = documentSnapshot.data()['v3_auth'];
       force_update = documentSnapshot.data()['force_update'];
@@ -479,7 +479,7 @@ class CommonData {
     DocumentSnapshot documentSnapshot = await users.doc(
         FirebaseAuth.instance.currentUser.uid).get();
     if (documentSnapshot.exists) {
-      print(documentSnapshot.data());
+      //print(documentSnapshot.data());
       return documentSnapshot.data();
     }
     else {
