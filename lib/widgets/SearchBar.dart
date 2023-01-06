@@ -141,7 +141,7 @@ class MovieSearch extends SearchDelegate{
 
 
   Widget smallUserCard({dynamic user,BuildContext context}) {
-    print("user ka detail $user");
+    //print("user ka detail $user");
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(

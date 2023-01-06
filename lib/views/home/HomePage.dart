@@ -10,6 +10,10 @@ import 'package:movie_app/views/Social/Profile.dart';
 import 'package:movie_app/views/Social/SocialMedia.dart';
 import 'package:movie_app/views/home/Feed.dart';
 import 'package:movie_app/widgets/SearchBar.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:store_redirect/store_redirect.dart';
+
+
 
 import '../../constants.dart';
 import '../SplashScreen.dart';
@@ -235,6 +239,40 @@ class _HomePageState extends State<HomePage> {
                             builder: (context) => CompleteProfile(
                                 FirebaseAuth.instance.currentUser)));
                   },
+          ),
+          ListTile(
+            leading: const Icon(Icons.share,
+              color: Colors.green,
+            ),
+            title: const Text("Share App",
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green
+              ),
+            ),
+            onTap: (){
+              Navigator.of(context).pop();
+              Share.share('Download MoviesX app to share our movie Playlist https://play.google.com/store/apps/details?id=com.thesandx.movie_app');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.star,
+              color: Colors.deepPurpleAccent,
+            ),
+            title: const Text("Rate Us",
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurpleAccent
+              ),
+            ),
+            onTap: (){
+              Navigator.of(context).pop();
+              StoreRedirect.redirect(
+                androidAppId: "com.thesandx.movie_app"
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.logout_rounded,

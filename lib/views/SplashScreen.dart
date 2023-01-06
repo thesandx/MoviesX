@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
       print("firebase initialization completed");
       User user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        print(user.phoneNumber);
+        //print(user.phoneNumber);
         CommonData.retriveAPIKey().then((value) async{
           //CollectionReference movies = FirebaseFirestore.instance.collection('/users/'+user.uid+'/movies');
            await CommonData.fetchFollwing(FirebaseAuth.instance.currentUser);

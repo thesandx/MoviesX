@@ -5,6 +5,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:movie_app/views/Social/Profile.dart';
 import 'package:movie_app/views/playlist/ShowContactPlayList.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../Services/CommonData.dart';
 
@@ -147,7 +148,7 @@ class _ContactsState extends State<Contacts> {
       print(_permissionStatus);
       if(_permissionStatus==PermissionStatus.granted) {
         _permissionDenied = false;
-        print("setstate ho gya");
+        //print("setstate ho gya");
       }
       else{
         _permissionDenied = true;
@@ -198,12 +199,23 @@ class _ContactsState extends State<Contacts> {
           }
           else if(snapshot.hasData && snapshot.data.length==0){
             return Center(
-              child: Text(
-                "No Contatcs",
-                style: TextStyle(
-                    fontSize: 24, fontWeight: FontWeight.bold),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "No Contacts found",
+                    style: TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  ElevatedButton(onPressed: () {
+                    Share.share(
+                        'Download MoviesX app to share our movie Playlist https://play.google.com/store/apps/details?id=com.thesandx.movie_app');
+                  },
+                      child: Text('Invite friends')),
+                ],
               ),
             );
+
           }
           else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
